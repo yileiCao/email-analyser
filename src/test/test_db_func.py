@@ -1,9 +1,20 @@
 from datetime import datetime
 
-from sqlalchemy import create_engine, insert
+import pytest
+from sqlalchemy import create_engine, insert, select, func
 
 from src.db_func import get_user_id, insert_into_tables, print_all_table
-from src.db_models import Base, User
+from src.db_models import Base, User, Mail
+
+
+@pytest.fixture
+def generate_conn():
+    engine = create_engine("sqlite://", echo=False)
+    Base.metadata.create_all(engine)
+    conn = engine.connect()
+    yield conn
+    conn.close()
+    engine.dispose()
 
 
 def generate_user_data(conn):
@@ -13,32 +24,32 @@ def generate_user_data(conn):
     conn.commit()
 
 
-def generate_mail_data(conn):
+def test_insert_into_tables(generate_conn):
     data = [
-        {'server_id': '18bfd1199e673cc7', 'sender': '"LEGO® Shop" <Noreply@t.crm.lego.com>',
+        {'mail_server_id': '18bfd1199e673cc7', 'sender': '"LEGO® Shop" <Noreply@t.crm.lego.com>',
          'recipient': '<cyrilcao28@gmail.com>', 'keyword': '受付完了！ 行健様のご注文が確定しました。',
          'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')},
-        {'server_id': '18bf1a0b42cfce45', 'sender': 'LinkedIn <messages-noreply@linkedin.com>',
+        {'mail_server_id': '18bf1a0b42cfce45', 'sender': 'LinkedIn <messages-noreply@linkedin.com>',
          'keyword': ' Yilei, add Pankaj Gawande - Solution Architect - SAP BRIM at Acuiti Labs',
          'recipient': 'Yilei Cao <cyrilcao28@gmail.com>',
          'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')}]
-    insert_into_tables(conn, data)
-    print_all_table(conn)
+    insert_into_tables(generate_conn, data)
+    mail_result = generate_conn.execute(select(Mail.sender, Mail.recipient))
+    assert len(list(mail_result)) == 2
+    for row in mail_result:
+        sender_id, recipient_id = row
+        assert isinstance(sender_id, int)
+        assert isinstance(recipient_id, int)
+    user_count = generate_conn.execute(select(func.count(User.id))).scalar()
+    assert user_count == 4
 
 
-def test_get_user_id(conn):
+def test_get_user_id(generate_conn):
+    generate_user_data(generate_conn)
     user_info1 = '"aa "<aa@email.com>'
     user_info2 = '"bb "<aa@email.com>'
-    result1 = get_user_id(conn, user_info1)
-    assert(result1 == 1)
-    result2 = get_user_id(conn, user_info2)
-    assert(result2 == 3)
+    result1 = get_user_id(generate_conn, user_info1)
+    assert (result1 == 1)
+    result2 = get_user_id(generate_conn, user_info2)
+    assert (result2 == 3)
 
-
-if __name__ == '__main__':
-
-    engine = create_engine("sqlite://", echo=True)
-    Base.metadata.create_all(engine)
-    with engine.connect() as conn:
-        generate_user_data(conn)
-        test_get_user_id(conn)

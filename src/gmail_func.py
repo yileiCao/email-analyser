@@ -22,31 +22,32 @@ our_email = 'cyrilcao28@gmail.com'
 
 
 def gmail_authenticate():
+    ## TODO  personalized token
     creds = None
     # the file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first time
-    if os.path.exists("token.pickle"):
-        with open("token.pickle", "rb") as token:
+    if os.path.exists("/Users/yileicao/Documents/email-extraction/src/token.pickle"):
+        with open("/Users/yileicao/Documents/email-extraction/src/token.pickle", "rb") as token:
             creds = pickle.load(token)
     # if there are no (valid) credentials availablle, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('/Users/yileicao/Documents/email-extraction/src/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # save the credentials for the next run
-        with open("token.pickle", "wb") as token:
+        with open("/Users/yileicao/Documents/email-extraction/src/token.pickle", "wb") as token:
             pickle.dump(creds, token)
     return build('gmail', 'v1', credentials=creds)
 
 
-def search_messages(service, query):
+def search_messages(service, query, get_all=True):
     result = service.users().messages().list(userId='me', q=query).execute()
     messages = []
     if 'messages' in result:
         messages.extend(result['messages'])
-    while 'nextPageToken' in result:
+    while get_all and 'nextPageToken' in result:
         page_token = result['nextPageToken']
         result = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
         if 'messages' in result:
@@ -59,6 +60,8 @@ def parse_parts(service, parts, folder_name, message):
     Utility function that parses the content of an email partition
     """
     if parts:
+        if isinstance(parts, dict):
+            parts = [parts]
         for part in parts:
             filename = part.get("filename")
             mimeType = part.get("mimeType")
@@ -118,9 +121,14 @@ def generate_data_from_msgs(service, gmail_msgs):
         row = {"server_id": message['id']}
         msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
         # parts can be the message body, or attachments
+        # if the msg contains only text/plain part, 'parts' is empty while 'body' is not empty
+        # if the msg contains multiple child MIME messages, 'body' is empty while 'parts' is not empty
+        # html msg is always in 'parts' fields
         payload = msg['payload']
         headers = payload.get("headers")
         parts = payload.get("parts")
+        if parts is None:
+            parts = payload
         # folder_name = "email"
         has_subject = False
         if headers:

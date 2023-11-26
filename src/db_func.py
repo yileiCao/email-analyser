@@ -9,7 +9,7 @@ def insert_into_tables(conn, mail_data):
     for mail_info in mail_data:
         mail_info['sender'] = get_user_id(conn, mail_info['sender'])
         mail_info['recipient'] = get_user_id(conn, mail_info['recipient'])
-        print(mail_info)
+        # print(mail_info)
     conn.execute(insert(Mail), mail_data)
     conn.commit()
 
