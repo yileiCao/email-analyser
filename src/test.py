@@ -18,6 +18,6 @@ if __name__ == '__main__':
     # for each email matched, read it (output plain/text to console & save HTML and attachments)
     data = generate_data_from_msgs(service, results)
     print(data)
-    with engine.connect() as conn:
-        insert_into_tables(conn, data)
-        print_all_table(conn)
+    with Session(engine) as session:
+        insert_into_tables(session, data)
+        print_all_table(session)
