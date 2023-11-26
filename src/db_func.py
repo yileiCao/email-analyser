@@ -15,8 +15,12 @@ def insert_into_tables(conn, mail_data):
 
 
 def get_user_id(conn, user_info):
-    name, addr = user_info.split('<')
-    name = name.strip('\'" ')
+    try:
+        name, addr = user_info.split('<')
+    except ValueError:
+        name, addr = None, user_info
+    if isinstance(name, str):
+        name = name.strip('\'" ')
     addr = addr.strip('\'" <>')
     id = conn.execute(select(User.id).where(
         User.email_address == addr,

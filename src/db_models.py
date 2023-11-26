@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from typing import Optional
-from sqlalchemy import ForeignKey, Integer, DateTime
+from sqlalchemy import ForeignKey, Integer, DateTime, Boolean
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
@@ -34,7 +34,11 @@ class Mail(Base):
     recipient = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     time = mapped_column(DateTime, nullable=False)
     mail_server_id = mapped_column(String(50), nullable=False)
-    keyword = mapped_column(String(200), nullable=False)
+    subject = mapped_column(String(200), nullable=True)
+    keyword = mapped_column(String(200), nullable=True)
+    # has_text = mapped_column(Boolean, nullable=False, default=False)
+    # has_html = mapped_column(Boolean, nullable=False, default=False)
+    # has_attachment = mapped_column(Boolean, nullable=False, default=False)
 
     # user: Mapped["User"] = relationship(back_populates="sender")
 
