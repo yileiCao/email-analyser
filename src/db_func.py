@@ -12,7 +12,12 @@ def insert_into_tables(session, mail_data):
         mail_info['recipient'] = get_user_id(session, mail_info['recipient'])
         # print(mail_info)
     if mail_data:
-        session.execute(insert(Mail), mail_data)
+        # session.execute(insert(Mail), mail_data)
+        for mail in mail_data:
+            if session.execute(select(Mail.id).where(
+                    Mail.mail_server_id == mail['mail_server_id'])).all():
+                continue
+            session.merge(Mail(**mail))
         session.commit()
 
 

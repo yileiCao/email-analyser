@@ -33,7 +33,12 @@ def test_insert_into_tables(generate_session):
         {'mail_server_id': '18bf1a0b42cfce45', 'sender': 'LinkedIn <messages-noreply@linkedin.com>',
          'keyword': ' Yilei, add Pankaj Gawande - Solution Architect - SAP BRIM at Acuiti Labs',
          'recipient': 'Yilei Cao <cyrilcao28@gmail.com>',
-         'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')}]
+         'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')},
+        {'mail_server_id': '18bf1a0b42cfce45', 'sender': 'LinkedIn <messages-noreply@linkedin.com>',
+         'keyword': ' Yilei, add Pankaj Gawande - Solution Architect - SAP BRIM at Acuiti Labs',
+         'recipient': 'Yilei Cao <cyrilcao28@gmail.com>',
+         'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')}
+        ]
     insert_into_tables(generate_session, data)
     mail_result = generate_session.execute(select(Mail.sender, Mail.recipient))
     assert len(list(mail_result)) == 2
