@@ -7,16 +7,14 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-
-
-class Base(DeclarativeBase):
-    pass
+from database import Base
 
 ##TODO
 ## relationship
 
 
 class User(Base):
+    __table_args__ = {'extend_existing': True}
     __tablename__ = "users"
     id = mapped_column(Integer, primary_key=True)
     email_address = mapped_column(String(50), nullable=False)
@@ -28,6 +26,7 @@ class User(Base):
 
 
 class Mail(Base):
+    __table_args__ = {'extend_existing': True}
     __tablename__ = "mails"
     id = mapped_column(Integer, primary_key=True)
     sender = mapped_column(Integer, ForeignKey('users.id'), nullable=False)

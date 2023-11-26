@@ -13,7 +13,7 @@ if __name__ == '__main__':
     service = gmail_authenticate()
 
     # get emails that match the query you specify
-    results = search_messages(service, "RUTILEA")
+    results = search_messages(service, "RETILEA")
     print(f"Found {len(results)} results.")
     # for each email matched, read it (output plain/text to console & save HTML and attachments)
     data = generate_data_from_msgs(service, results)
