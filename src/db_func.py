@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import insert, create_engine, select, text
+from sqlalchemy import insert, create_engine, select, text, func
 from sqlalchemy.orm import Session, aliased
 
 from src.db_models import Mail, User, Base
@@ -48,6 +48,26 @@ def print_all_table(session):
         print(mail)
 
 
+def build_select_statement(filters):
+    userR = aliased(User, name="userR")
+    userS = aliased(User, name="userS")
+    query = \
+        select(userS.name, userS.email_address, userR.name, userR.email_address,
+               Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time) \
+            .join(userS, Mail.sender_user).join(userR, Mail.recipient_user)
+    if filters.get("sender_email"):
+        query = query.where(userS.email_address == filters["sender_email"])
+    if filters.get("recipient_email"):
+        query = query.where(userR.email_address == filters["recipient_email"])
+    if filters.get('date_before'):
+        query = query.where(func.date(Mail.time) <= filters['date_before'])
+    if filters.get('date_after'):
+        query = query.where(func.date(Mail.time) >= filters['date_after'])
+    if filters.get('keyword'):
+        query = query.where(Mail.keyword.like(f"%{filters['keyword']}%"))
+    return query
+
+
 if __name__ == '__main__':
     data = [
         {'mail_server_id': '18bfd1199e673cc7', 'sender': '"LEGO® Shop" <Noreply@t.crm.lego.com>',
@@ -79,13 +99,17 @@ if __name__ == '__main__':
         # mails = session.execute(text(sql_text)).all()
         # print(mails)
 
-        userR = aliased(User, name="userR")
-        userS = aliased(User, name="userS")
-        statement = \
-            select(userS.name, userS.email_address, userR.name, userR.email_address,
-                   Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time)\
-            .join(userS, Mail.sender_user).join(userR, Mail.recipient_user)\
-            .where(userS.email_address == 'cyrilcao28@gmail.com', userS.name == 'yilei CAO')
+        # userR = aliased(User, name="userR")
+        # userS = aliased(User, name="userS")
+        # statement = \
+        #     select(userS.name, userS.email_address, userR.name, userR.email_address,
+        #            Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time)\
+        #     .join(userS, Mail.sender_user).join(userR, Mail.recipient_user)
+        # statement = statement.where(userS.email_address == 'cyrilcao28@gmail.com')
+        # statement = statement.where(userS.name == 'yilei CAO')
+        # statement = statement.where(func.date(Mail.time) <= '2023-11-23')
+        # statement = statement.where(Mail.keyword.like('%thank%'))
+        statement = select(Mail)
         print(statement)
         rows = session.execute(statement).all()
         print(rows)
