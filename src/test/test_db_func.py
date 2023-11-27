@@ -87,15 +87,15 @@ def test_build_select_statement(generate_session):
     query1 = build_select_statement(filters1)
     rows1 = generate_session.execute(query1).all()
     assert len(rows1) == 4
-    filters2 = {"sender_email": "cyrilcao28@gmail.com"}
+    filters2 = {"fr": "cyrilcao28@gmail.com"}
     query2 = build_select_statement(filters2)
     rows2 = generate_session.execute(query2).all()
     assert len(rows2) == 2
-    filters3 = {"date_before": '2023-11-23'}
+    filters3 = {"be": '2023-11-23'}
     query3 = build_select_statement(filters3)
     rows3 = generate_session.execute(query3).all()
     assert len(rows3) == 3
-    filters4 = {"keyword": 'task'}
+    filters4 = {"ke": 'task'}
     query4 = build_select_statement(filters4)
     rows4 = generate_session.execute(query4).all()
     assert len(rows4) == 2

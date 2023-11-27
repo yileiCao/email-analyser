@@ -55,16 +55,16 @@ def build_select_statement(filters):
         select(userS.name, userS.email_address, userR.name, userR.email_address,
                Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time) \
             .join(userS, Mail.sender_user).join(userR, Mail.recipient_user)
-    if filters.get("sender_email"):
-        query = query.where(userS.email_address == filters["sender_email"])
-    if filters.get("recipient_email"):
-        query = query.where(userR.email_address == filters["recipient_email"])
-    if filters.get('date_before'):
-        query = query.where(func.date(Mail.time) <= filters['date_before'])
-    if filters.get('date_after'):
-        query = query.where(func.date(Mail.time) >= filters['date_after'])
-    if filters.get('keyword'):
-        query = query.where(Mail.keyword.like(f"%{filters['keyword']}%"))
+    if filters.get("fr"):  # sender email_address
+        query = query.where(userS.email_address == filters["fr"])
+    if filters.get("to"):  # recipient email_address
+        query = query.where(userR.email_address == filters["to"])
+    if filters.get('be'):  # time before
+        query = query.where(func.date(Mail.time) <= filters['be'])
+    if filters.get('af'):  # time after
+        query = query.where(func.date(Mail.time) >= filters['af'])
+    if filters.get('ke'):  # keyword
+        query = query.where(Mail.keyword.like(f"%{filters['ke']}%"))
     return query
 
 

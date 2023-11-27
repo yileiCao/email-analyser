@@ -3,16 +3,44 @@
 {% block content %}
     <h1>{% block title %} Search Emails {% endblock %}</h1>
 
-    <form method="POST">
-        <div class="search-form-group">
-            <label>sql_request</label>
-            <input type="text" name="sql_request"
-                   placeholder="SELECT * FROM MAIL;" class="form-control"
-                   value="{{ request.form['sql_request'] }}">
+    <form method="post">
+        <div class="form-group">
+            <label>Email_from</label>
+            <input type="text" name="email_from"
+                   placeholder="Email From" class="form-control"
+                   value="{{ request.form['email_from'] }}">
         </div>
 
-        <div class="search-form-group">
-            <button type="submit" class="btn btn-primary" value="Do Something">Submit</button>
+        <div class="form-group">
+            <label>Email_to</label>
+            <input type="text" name="email_to"
+                   placeholder="Email To" class="form-control"
+                   value="{{ request.form['email_to'] }}">
+        </div>
+
+        <div class="form-group">
+            <label>After</label>
+            <input type="date" name="date_after"
+                   placeholder="2023-11-01"
+                   value="{{ request.form['date_after'] }}">
+        </div>
+
+        <div class="form-group">
+            <label>Before</label>
+            <input type="date" name="date_before"
+                   placeholder="2023-12-01"
+                   value="{{ request.form['date_before'] }}">
+        </div>
+
+        <div class="form-group">
+            <label>Keyword</label>
+            <input type="text" name="keyword"
+                   placeholder="Keyword" class="form-control"
+                   value="{{ request.form['keyword'] }}">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </form>
 
