@@ -10,7 +10,8 @@ from src.db_models import Base, User, Mail
 
 @pytest.fixture
 def generate_session():
-    engine = create_engine("sqlite://", echo=False)
+    engine = create_engine("sqlite:////Users/yileicao/Documents/email-extraction/email.db", echo=True)
+    # engine = create_engine("sqlite://", echo=False)
     Base.metadata.create_all(engine)
     session = sessionmaker(bind=engine)()
     yield session

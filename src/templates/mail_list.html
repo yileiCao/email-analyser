@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Search Emails {% endblock %}</h1>
+
+    <form method="POST">
+        <div class="search-form-group">
+            <label>sql_request</label>
+            <input type="text" name="sql_request"
+                   placeholder="SELECT * FROM MAIL;" class="form-control"
+                   value="{{ request.form['sql_request'] }}">
+        </div>
+
+        <div class="search-form-group">
+            <button type="submit" class="btn btn-primary" value="Do Something">Submit</button>
+        </div>
+    </form>
+
+    {% for email in emails %}
+        <span class="badge badge-primary">{{ email }}</span>
+        <hr>
+    {% endfor %}
+{% endblock %}

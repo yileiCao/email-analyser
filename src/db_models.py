@@ -7,10 +7,14 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from src.database import Base
+# from src.database import Base
 
 ##TODO
 ## relationship
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class User(Base):
@@ -19,6 +23,8 @@ class User(Base):
     id = mapped_column(Integer, primary_key=True)
     email_address = mapped_column(String(50), nullable=False)
     name = mapped_column(String(50), nullable=True)
+    # sender = relationship("Mail", back_populates="sender_user")
+    # recipient = relationship("Mail", back_populates="recipient_user")
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, email_address={self.email_address!r}, " \
@@ -35,6 +41,8 @@ class Mail(Base):
     mail_server_id = mapped_column(String(50), nullable=False)
     subject = mapped_column(String(200), nullable=True)
     keyword = mapped_column(String(200), nullable=True)
+    sender_user = relationship("User", primaryjoin=sender==User.id)
+    recipient_user = relationship("User", primaryjoin=recipient==User.id)
     # has_text = mapped_column(Boolean, nullable=False, default=False)
     # has_html = mapped_column(Boolean, nullable=False, default=False)
     # has_attachment = mapped_column(Boolean, nullable=False, default=False)

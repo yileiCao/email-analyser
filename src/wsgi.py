@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, escape
-
+from sqlalchemy import text, select
+from sqlalchemy.orm import Session
+import base64
 from src.db_func import insert_into_tables, print_all_table
 from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs
 from database import db_session, init_db, engine
@@ -13,11 +15,11 @@ def shutdown_session(exception=None):
 
 
 @app.route('/')
-def index():
+def home():
     # conn = get_db_connection()
     # posts = conn.execute('SELECT * FROM posts').fetchall()
     # conn.close()
-    return render_template('index.html')
+    return render_template('home.html')
 
 
 @app.route('/greet')
@@ -60,12 +62,39 @@ def load_mails():
         results = search_messages(service, query)
         print(f"Found {len(results)} results.")
         # for each email matched, read it (output plain/text to console & save HTML and attachments)
-        # data = generate_data_from_msgs(service, results)
-        # with engine.connect() as conn:
-        #     insert_into_tables(conn, data)
-        #     print_all_table(conn)
+        data = generate_data_from_msgs(service, results)
+        with Session(engine) as session:
+            insert_into_tables(session, data)
+            print_all_table(session)
 
     return render_template('load_mails.html')
+
+
+@app.route('/search_mails')
+def search_mails():
+    return redirect(url_for('mail_list', encoded_sql='None'))
+
+
+def mail_search(sql_request):
+    with Session(engine) as session:
+        mails = session.execute(text(sql_request)).fetchall()
+    return mails
+
+
+@app.route('/mail_list/<encoded_sql>/', methods=('GET', 'POST'))
+def mail_list(encoded_sql):
+    if request.method == 'POST':
+        sql_request = request.form['sql_request']
+        # encoded_sql = base64.b64encode(bytes(sql_request, 'utf-8'))
+        encoded_sql = sql_request.replace(' ', '1')
+        return redirect(url_for('mail_list', encoded_sql=encoded_sql))
+    # sql_request = encoded_sql.decode('utf-8')
+    if encoded_sql == "None":
+        mails = []
+    else:
+        sql_request = encoded_sql.replace('1', ' ')
+        mails = mail_search(sql_request)
+    return render_template('mail_list.html', emails=mails)
 
 
 if __name__ == '__main__':

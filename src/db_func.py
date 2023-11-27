@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import insert, create_engine, select
-from sqlalchemy.orm import Session
+from sqlalchemy import insert, create_engine, select, text
+from sqlalchemy.orm import Session, aliased
 
 from src.db_models import Mail, User, Base
 
@@ -60,5 +60,32 @@ if __name__ == '__main__':
     engine = create_engine("sqlite:////Users/yileicao/Documents/email-extraction/email.db", echo=True)
     Base.metadata.create_all(engine)
     with Session(engine) as session:
-        insert_into_tables(session, data)
-        print_all_table(session)
+        # insert_into_tables(session, data)
+        # print_all_table(session)
+
+        # mails = session.execute(text("select * from mails")).all()
+        # print(mails)
+
+        # sql_text = '''
+        # SELECT su.name sender_name, su.email_address sender_email_address,
+        #     ru.name recipient_name, ru.email_address recipient_email_address,
+        #     m.mail_server_id, m.subject, m.keyword, m.time
+        # FROM mails m
+        # JOIN users su
+        # ON m.sender = su.id
+        # JOIN users ru
+        # ON m.recipient = ru.id
+        # '''
+        # mails = session.execute(text(sql_text)).all()
+        # print(mails)
+
+        userR = aliased(User, name="userR")
+        userS = aliased(User, name="userS")
+        statement = \
+            select(userS.name, userS.email_address, userR.name, userR.email_address,
+                   Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time)\
+            .join(userS, Mail.sender_user).join(userR, Mail.recipient_user)\
+            .where(userS.email_address == 'cyrilcao28@gmail.com', userS.name == 'yilei CAO')
+        print(statement)
+        rows = session.execute(statement).all()
+        print(rows)
