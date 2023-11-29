@@ -1,3 +1,5 @@
+import urllib
+
 from flask import Flask, render_template, request, url_for, flash, redirect, escape
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
@@ -7,7 +9,6 @@ from src.gmail_func import gmail_authenticate, search_messages, generate_data_fr
 from database import db_session, init_db, engine
 
 app = Flask(__name__)
-data = []
 
 
 @app.teardown_appcontext
@@ -41,7 +42,6 @@ def greet():  # http://127.0.0.1:8000/greet?name=aa
 
 @app.route('/load_mails', methods=('GET', 'POST'))
 def load_mails():
-    global data
     if request.method == 'POST':
         if 'get-emails' in request.form:
             keyword = request.form['keyword']
@@ -61,16 +61,27 @@ def load_mails():
                 query += f"from:{email_from} "
             if email_to:
                 query += f"to:{email_to} "
+            encoded_query = query.replace(' ', '0x20')
+            return redirect(f'/raw_mail_list/{encoded_query}>/1')
+    return render_template('load_mails.html')
 
-            results = search_messages(service, query)
-            print(f"Found {len(results)} results.")
-            data = []
-            data = generate_data_from_msgs(service, results)
-            data_extract_keyword(data)
-            flash(f'Found {len(results)} matching mails!')
-            return render_template('raw_mail_list.html', emails=data)
-        elif 'confirm-emails' in request.form:
+
+@app.route('/raw_mail_list/<encoded_query>/<page_num>', methods=('GET', 'POST'))
+def raw_mail_list(encoded_query, page_num):
+    ## TODO: page num support
+    query = encoded_query.replace('0x20', ' ')
+    results = search_messages(service, query)
+    # print(f"Found {len(results)} results.")
+    ## TODO: body text not needed here
+    data = generate_data_from_msgs(service, results)
+
+    if request.method == 'GET':
+        flash(f'Found {len(results)} matching mails!')
+        return render_template('raw_mail_list.html', emails=data)
+    if request.method == 'POST':
+        if 'confirm-emails' in request.form:
             # for each email matched, read it (output plain/text to console & save HTML and attachments)
+            data_extract_keyword(data)
             inserted_data = []
             for name in list(request.form.keys()):
                 if name.startswith('mail'):
@@ -78,14 +89,11 @@ def load_mails():
                     row = data[num]
                     row.pop('id')
                     inserted_data.append(row)
-            data = []
             with Session(engine) as session:
                 num_succeed = insert_into_tables(session, inserted_data)
                 flash(f"You've successfully added {num_succeed} new mails!")  # info, error, warning
                 # print_all_table(session)
                 return redirect(url_for('load_mails'))
-
-    return render_template('load_mails.html')
 
 
 @app.route('/search_mails')
