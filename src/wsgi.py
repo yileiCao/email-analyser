@@ -66,7 +66,6 @@ def load_mails():
             print(f"Found {len(results)} results.")
             data = []
             data = generate_data_from_msgs(service, results)
-            print(data)
             data_extract_keyword(data)
             flash(f'Found {len(results)} matching mails!')
             return render_template('raw_mail_list.html', emails=data)

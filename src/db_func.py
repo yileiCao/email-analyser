@@ -4,6 +4,7 @@ from sqlalchemy import insert, create_engine, select, text, func
 from sqlalchemy.orm import Session, aliased
 
 from src.db_models import Mail, User, Base
+from src.wordnet_func import get_lemmas_en, get_lemmas_jpn
 
 
 def insert_into_tables(session, mail_data):
@@ -67,8 +68,13 @@ def build_select_statement(filters):
         query = query.where(func.date(Mail.time) <= filters['be'])
     if filters.get('af'):  # time after
         query = query.where(func.date(Mail.time) >= filters['af'])
+    # if filters.get('ke'):  # keyword
+    #     query = query.where(Mail.keyword.like(f"%{filters['ke']}%"))
     if filters.get('ke'):  # keyword
-        query = query.where(Mail.keyword.like(f"%{filters['ke']}%"))
+        word_set_en = get_lemmas_en(filters['ke'])
+        word_set_jpn = get_lemmas_jpn(filters['ke'])
+        word_set = '|'.join([word_set_en, word_set_jpn])
+        query = query.where(Mail.keyword.regexp_match(f"({word_set})"))
     return query
 
 
