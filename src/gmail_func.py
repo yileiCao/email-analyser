@@ -103,9 +103,9 @@ def generate_data_from_msgs(service, gmail_msgs):
         - Downloads text/html content (if available) and saves it under the folder created as index.html
         - Downloads any file that is attached to the email and saves it in the folder created
     """
-    result = []
-    for message in gmail_msgs:
-        row = {"mail_server_id": message['id']}
+    mails = []
+    for idx, message in enumerate(gmail_msgs):
+        row = {"id": idx, "mail_server_id": message['id']}
         msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
 
         payload = msg['payload']
@@ -121,13 +121,20 @@ def generate_data_from_msgs(service, gmail_msgs):
         # only analyze text/plain
         text = find_content(payload, "text/plain")
         if text:
-            parsed_text = parse_body(text, "text/plain")
-            most_recent_text = parsed_text.split(' > ')[0]  # try removing duplicated earlier emails
-            key_word = extract_keyword(most_recent_text)
-            row['keyword'] = ', '.join([i[0] for i in key_word])
-        result.append(row)
-    # print(result)
-    return result
+            text = parse_body(text, "text/plain")
+            text = text.split(' > ')[0]  # try removing duplicated earlier emails
+        row['text'] = text
+        mails.append(row)
+    return mails
+
+
+def data_extract_keyword(data):
+    for mail in data:
+        text = mail.pop('text')
+        mail['keyword'] = ''
+        if text:
+            key_word = extract_keyword(text)
+            mail['keyword'] = ', '.join([i[0] for i in key_word])
 
 
 if __name__ == '__main__':

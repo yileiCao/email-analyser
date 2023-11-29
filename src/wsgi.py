@@ -3,10 +3,11 @@ from sqlalchemy import text, select
 from sqlalchemy.orm import Session
 import base64
 from src.db_func import insert_into_tables, print_all_table, build_select_statement
-from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs
+from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs, data_extract_keyword
 from database import db_session, init_db, engine
 
 app = Flask(__name__)
+data = []
 
 
 @app.teardown_appcontext
@@ -40,32 +41,50 @@ def greet():  # http://127.0.0.1:8000/greet?name=aa
 
 @app.route('/load_mails', methods=('GET', 'POST'))
 def load_mails():
+    global data
     if request.method == 'POST':
-        keyword = request.form['keyword']
-        date_after = request.form['date_after']
-        date_before = request.form['date_before']
-        email_from = request.form['email_from']
-        email_to = request.form['email_to']
+        if 'get-emails' in request.form:
+            keyword = request.form['keyword']
+            date_after = request.form['date_after']
+            date_before = request.form['date_before']
+            email_from = request.form['email_from']
+            email_to = request.form['email_to']
 
-        query = ""
-        if keyword:
-            query += f"{keyword} "
-        if date_after:
-            query += f"after:{date_after} "
-        if date_before:
-            query += f"before:{date_before} "
-        if email_from:
-            query += f"from:{email_from} "
-        if email_to:
-            query += f"to:{email_to} "
+            query = ""
+            if keyword:
+                query += f"{keyword} "
+            if date_after:
+                query += f"after:{date_after} "
+            if date_before:
+                query += f"before:{date_before} "
+            if email_from:
+                query += f"from:{email_from} "
+            if email_to:
+                query += f"to:{email_to} "
 
-        results = search_messages(service, query)
-        print(f"Found {len(results)} results.")
-        # for each email matched, read it (output plain/text to console & save HTML and attachments)
-        data = generate_data_from_msgs(service, results)
-        with Session(engine) as session:
-            insert_into_tables(session, data)
-            print_all_table(session)
+            results = search_messages(service, query)
+            print(f"Found {len(results)} results.")
+            data = []
+            data = generate_data_from_msgs(service, results)
+            print(data)
+            data_extract_keyword(data)
+            flash(f'Found {len(results)} matching mails!')
+            return render_template('raw_mail_list.html', emails=data)
+        elif 'confirm-emails' in request.form:
+            # for each email matched, read it (output plain/text to console & save HTML and attachments)
+            inserted_data = []
+            for name in list(request.form.keys()):
+                if name.startswith('mail'):
+                    num = int(name[4:])
+                    row = data[num]
+                    row.pop('id')
+                    inserted_data.append(row)
+            data = []
+            with Session(engine) as session:
+                num_succeed = insert_into_tables(session, inserted_data)
+                flash(f"You've successfully added {num_succeed} new mails!")  # info, error, warning
+                # print_all_table(session)
+                return redirect(url_for('load_mails'))
 
     return render_template('load_mails.html')
 
@@ -133,6 +152,8 @@ def mail_list():
 
 
 if __name__ == '__main__':
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
     init_db()
     service = gmail_authenticate()
     app.run(host='0.0.0.0', port='8000', debug=True)

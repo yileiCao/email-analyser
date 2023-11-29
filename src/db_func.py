@@ -7,6 +7,7 @@ from src.db_models import Mail, User, Base
 
 
 def insert_into_tables(session, mail_data):
+    num_succeed = len(mail_data)
     for mail_info in mail_data:
         mail_info['sender'] = get_user_id(session, mail_info['sender'])
         mail_info['recipient'] = get_user_id(session, mail_info['recipient'])
@@ -16,9 +17,11 @@ def insert_into_tables(session, mail_data):
         for mail in mail_data:
             if session.execute(select(Mail.id).where(
                     Mail.mail_server_id == mail['mail_server_id'])).all():
+                num_succeed -= 1
                 continue
             session.merge(Mail(**mail))
         session.commit()
+    return num_succeed
 
 
 def get_user_id(session, user_info):

@@ -32,7 +32,7 @@
       </nav>
     <div class="container">
         {% for message in get_flashed_messages() %}
-            <div class="alert alert-danger">{{ message }}</div>
+            <div class="info alert-success">{{ message }}</div>
         {% endfor %}
         {% block content %} {% endblock %}
     </div>
