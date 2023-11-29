@@ -44,8 +44,22 @@
         </div>
     </form>
 
-    {% for email in emails %}
-        <span class="badge badge-primary">{{ email }}</span>
-        <hr>
-    {% endfor %}
+    <table border='1' style='border-collapse:collapse'>
+            <tr>
+                <td>Sender</td>
+                <td>Recipient</td>
+                <td>Time</td>
+                <td>Subject</td>
+                <td>Keyword</td>
+            </tr>
+        {% for mail in emails %}
+            <tr>
+                <td>{{mail['email_address']}}</td>
+                <td>{{mail['email_address_1']}}</td>
+                <td>{{mail['time']}}</td>
+                <td>{{mail['subject']}}</td>
+                <td>{{mail['keyword']}}</td>
+            </tr>
+        {% endfor %}
+        </table>
 {% endblock %}

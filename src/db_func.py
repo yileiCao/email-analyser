@@ -57,7 +57,8 @@ def build_select_statement(filters):
     query = \
         select(userS.name, userS.email_address, userR.name, userR.email_address,
                Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time) \
-            .join(userS, Mail.sender_user).join(userR, Mail.recipient_user)
+            .join(userS, Mail.sender_user).join(userR, Mail.recipient_user) \
+            .order_by(Mail.time.desc())
     if filters.get("fr"):  # sender email_address
         query = query.where(userS.email_address == filters["fr"])
     if filters.get("to"):  # recipient email_address

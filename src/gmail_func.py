@@ -1,9 +1,8 @@
 import os
 import pickle
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Gmail API utils
-
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -84,6 +83,7 @@ def collect_head_info(headers, row):
                 row["time"] = datetime.strptime(value, '%a, %d %b %Y %H:%M:%S %z')
             except ValueError:
                 row["time"] = datetime.strptime(value, '%a, %d %b %Y %H:%M:%S %z (%Z)')
+            row["time"] = row["time"].astimezone(timezone.utc)
 
 
 def find_content(payload, content_type):
