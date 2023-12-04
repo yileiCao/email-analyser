@@ -158,6 +158,17 @@ def mail_list():
     return render_template('mail_list.html', emails=mails)
 
 
+@app.route('/view_mail/<mail_id>', methods=('GET', 'POST'))
+def view_mail(mail_id):
+    id = int(mail_id)
+    filters = {'id': id}
+    query = build_select_statement(filters)
+    mail = mail_search_statement(query)[0]
+    mail_server_id = mail[4]  # mail_server_id
+    data = generate_data_from_msgs(service, [{'id': mail_server_id}])
+    return render_template('view_mail.html', data=data[0])
+
+
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'

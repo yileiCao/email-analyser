@@ -68,6 +68,10 @@ def parse_body(body, content_type):
 
 
 def collect_head_info(headers, row):
+    """
+    :param headers: Gmail API returned header message
+    :param row: generated info is stored in the row dictionary
+    """
     for header in headers:
         name = header.get("name")
         value = header.get("value")
@@ -96,12 +100,9 @@ def find_content(payload, content_type):
 
 def generate_data_from_msgs(service, gmail_msgs):
     """
-    This function takes Gmail API `service` and the given `message_id` and does the following:
-        - Downloads the content of the email
-        - Prints email basic information (To, From, Subject & Date) and plain/text parts
-        - Creates a folder for each email based on the subject
-        - Downloads text/html content (if available) and saves it under the folder created as index.html
-        - Downloads any file that is attached to the email and saves it in the folder created
+    :param service: Gmail API `service`
+    :param gmail_msgs: Gmail list API returned messages
+    :return: a list of dictionaries containing header information, plain text of the emails.
     """
     mails = []
     for idx, message in enumerate(gmail_msgs):
@@ -122,7 +123,8 @@ def generate_data_from_msgs(service, gmail_msgs):
         text = find_content(payload, "text/plain")
         if text:
             text = parse_body(text, "text/plain")
-            text = text.split(' > ')[0]  # try removing duplicated earlier emails
+            ##  TODO: Is there any better sulution?
+            text = text.split('\n> ')[0]  # try removing duplicated earlier emails
         row['text'] = text
         mails.append(row)
     return mails

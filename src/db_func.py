@@ -75,6 +75,8 @@ def build_select_statement(filters):
         word_set_jpn = get_lemmas_jpn(filters['ke'])
         word_set = '|'.join([word_set_en, word_set_jpn])
         query = query.where(Mail.keyword.regexp_match(f"({word_set})"))
+    if filters.get('id'):
+        query = query.where(Mail.id == filters['id'])
     return query
 
 

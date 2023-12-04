@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Email Content {% endblock %}</h1>
+
+
+    <table border='1' style='border-collapse:collapse'>
+            <tr>
+                <td>Sender</td>
+                <td>Recipient</td>
+                <td>Time</td>
+                <td>Subject</td>
+                <td>Keyword</td>
+            </tr>
+            <tr>
+                <td>{{data['email_address']}}</td>
+                <td>{{data['email_address_1']}}</td>
+                <td>{{data['time']}}</td>
+                <td>{{data['subject']}}</td>
+                <td>{{data['keyword']}}</td>
+            </tr>
+        </table>
+        <p>{{data['text']}}</p>
+{% endblock %}
