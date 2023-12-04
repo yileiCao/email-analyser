@@ -160,13 +160,13 @@ def mail_list():
 
 @app.route('/view_mail/<mail_id>', methods=('GET', 'POST'))
 def view_mail(mail_id):
-    id = int(mail_id)
-    filters = {'id': id}
+    mail_id = int(mail_id)
+    filters = {'id': mail_id}
     query = build_select_statement(filters)
     mail = mail_search_statement(query)[0]
     mail_server_id = mail[4]  # mail_server_id
-    data = generate_data_from_msgs(service, [{'id': mail_server_id}])
-    return render_template('view_mail.html', data=data[0])
+    plain_text = generate_data_from_msgs(service, [{'id': mail_server_id}])[0]['text']
+    return render_template('view_mail.html', data=mail, text=plain_text)
 
 
 if __name__ == '__main__':
