@@ -46,6 +46,7 @@
 
     <table border='1' style='border-collapse:collapse'>
             <tr>
+                <td>ID</td>
                 <td>Sender</td>
                 <td>Recipient</td>
                 <td>Time</td>
@@ -54,6 +55,7 @@
             </tr>
         {% for mail in emails %}
             <tr>
+                <td><a href="{{ url_for('view_mail', mail_id=mail['id']) }}">{{mail['id']}}</a></td>
                 <td>{{mail['email_address']}}</td>
                 <td>{{mail['email_address_1']}}</td>
                 <td>{{mail['time']}}</td>

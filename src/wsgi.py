@@ -168,13 +168,13 @@ def view_mail(mail_id):
     for keyword in keywords.replace(',', ' ').split():
         keyword = keyword.strip()
         for word in (keyword, keyword.upper(), keyword.capitalize()):
-            plain_text = plain_text.replace(f"{word}", f'<mark style="background-color:burlywood;">{word}</mark>')
+            plain_text = plain_text.replace(f'{" " + word}', f'<mark style="background-color:burlywood;">{" " + word}</mark>')
     plain_text = Markup(plain_text)
     return render_template('view_mail.html', data=mail, text=plain_text)
 
 
-@app.route('/mail_delete/<mail_id>', methods=['POST'])
-def mail_delete(mail_id):
+@app.route('/delete_mail/<mail_id>', methods=['POST'])
+def delete_mail(mail_id):
     if request.method == 'POST':
         with Session(engine) as session:
             delete_mail_with_id(session, mail_id)
