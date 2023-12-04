@@ -44,7 +44,8 @@
         </div>
     </form>
 
-    <table border='1' style='border-collapse:collapse'>
+    <table id="myTable" border='5' class='table table-striped' style='border-collapse:separate'>
+        <thead>
             <tr>
                 <td>ID</td>
                 <td>Sender</td>
@@ -53,6 +54,8 @@
                 <td>Subject</td>
                 <td>Keyword</td>
             </tr>
+        </thead>
+        <tbody>
         {% for mail in emails %}
             <tr>
                 <td><a href="{{ url_for('view_mail', mail_id=mail['id']) }}">{{mail['id']}}</a></td>
@@ -63,5 +66,24 @@
                 <td>{{mail['keyword']}}</td>
             </tr>
         {% endfor %}
-        </table>
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#myTable').DataTable({
+        columns: [
+          {searchable: false},
+          null,
+          null,
+          {searchable: false},
+          {orderable: false},
+          {orderable: false}],
+      });
+    });
+
+
+  </script>
 {% endblock %}

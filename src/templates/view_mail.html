@@ -4,7 +4,8 @@
     <h1>{% block title %} Email Content {% endblock %}</h1>
 
 
-    <table border='1' style='border-collapse:collapse'>
+    <table border='5' class='table table-striped' style='border-collapse:separate'>
+        <thead>
             <tr>
                 <td>Sender</td>
                 <td>Recipient</td>
@@ -12,6 +13,8 @@
                 <td>Subject</td>
                 <td>Keyword</td>
             </tr>
+        </thead>
+        <tbody>
             <tr>
                 <td>{{data['email_address']}}</td>
                 <td>{{data['email_address_1']}}</td>
@@ -19,15 +22,16 @@
                 <td>{{data['subject']}}</td>
                 <td>{{data['keyword']}}</td>
             </tr>
-        </table>
-        <pre>{{text}}</pre>
+        </tbody>
+    </table>
+    <pre>{{text}}</pre>
 
-        <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
-            <input type="hidden" name="extra_submit_param" value="extra_submit_value">
-            <button type="submit" name="submit_param" value="submit_value" class="link-button"
-                    onclick="return confirm('Do you want to permanently delete mail {{data['id']}}?');">
-                Delete This Mail
-            </button>
-        </form>
+    <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
+        <input type="hidden" name="extra_submit_param" value="extra_submit_value">
+        <button type="submit" name="submit_param" value="submit_value" class="link-button"
+                onclick="return confirm('Do you want to permanently delete mail {{data['id']}}?');">
+            Delete This Mail
+        </button>
+    </form>
 
 {% endblock %}
