@@ -57,7 +57,7 @@ def build_select_statement(filters):
     userS = aliased(User, name="userS")
     query = \
         select(userS.name, userS.email_address, userR.name, userR.email_address,
-               Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time) \
+               Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time, Mail.id) \
             .join(userS, Mail.sender_user).join(userR, Mail.recipient_user) \
             .order_by(Mail.time.desc())
     if filters.get("fr"):  # sender email_address
@@ -75,9 +75,14 @@ def build_select_statement(filters):
         word_set_jpn = get_lemmas_jpn(filters['ke'])
         word_set = '|'.join([word_set_en, word_set_jpn])
         query = query.where(Mail.keyword.regexp_match(f"({word_set})"))
-    if filters.get('id'):
+    if filters.get('id') is not None:
         query = query.where(Mail.id == filters['id'])
     return query
+
+
+def delete_mail_with_id(session, mail_id):
+    session.query(Mail).filter(Mail.id == mail_id).delete()
+    session.commit()
 
 
 if __name__ == '__main__':

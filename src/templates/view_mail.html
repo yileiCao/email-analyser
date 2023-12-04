@@ -22,4 +22,13 @@
         </table>
         <p>{{text}}</p>
 
+        <form method="post" action="{{ url_for('mail_delete', mail_id=data['id']) }}" class="inline">
+            <input type="hidden" name="extra_submit_param" value="extra_submit_value">
+            <button type="submit" name="submit_param" value="submit_value" class="link-button"
+                    onclick="return confirm('Do you want to permanently delete mail {{data['id']}}?');"
+                    href="{{ url_for('mail_delete', mail_id=data['id']) }}">
+                Delete This Mail
+            </button>
+        </form>
+
 {% endblock %}

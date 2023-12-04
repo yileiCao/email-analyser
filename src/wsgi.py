@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for, flash, redirect, esc
 from markupsafe import Markup
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
-from src.db_func import insert_into_tables, print_all_table, build_select_statement
+from src.db_func import insert_into_tables, print_all_table, build_select_statement, delete_mail_with_id
 from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs, data_extract_keyword
 from database import db_session, init_db, engine
 
@@ -171,6 +171,15 @@ def view_mail(mail_id):
             plain_text = plain_text.replace(f"{word}", f'<mark style="background-color:burlywood;">{word}</mark>')
     plain_text = Markup(plain_text)
     return render_template('view_mail.html', data=mail, text=plain_text)
+
+
+@app.route('/mail_delete/<mail_id>', methods=['POST'])
+def mail_delete(mail_id):
+    if request.method == 'POST':
+        with Session(engine) as session:
+            delete_mail_with_id(session, mail_id)
+            flash(f'Mail {mail_id} successfully removed')
+        return redirect(url_for('mail_list'))
 
 
 if __name__ == '__main__':
