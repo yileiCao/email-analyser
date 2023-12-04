@@ -1,9 +1,7 @@
-import urllib
-
 from flask import Flask, render_template, request, url_for, flash, redirect, escape
+from markupsafe import Markup
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
-import base64
 from src.db_func import insert_into_tables, print_all_table, build_select_statement
 from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs, data_extract_keyword
 from database import db_session, init_db, engine
@@ -166,6 +164,12 @@ def view_mail(mail_id):
     mail = mail_search_statement(query)[0]
     mail_server_id = mail[4]  # mail_server_id
     plain_text = generate_data_from_msgs(service, [{'id': mail_server_id}])[0]['text']
+    keywords = mail[6]
+    for keyword in keywords.replace(',', ' ').split():
+        keyword = keyword.strip()
+        for word in (keyword, keyword.upper(), keyword.capitalize()):
+            plain_text = plain_text.replace(f"{word}", f'<mark style="background-color:burlywood;">{word}</mark>')
+    plain_text = Markup(plain_text)
     return render_template('view_mail.html', data=mail, text=plain_text)
 
 
