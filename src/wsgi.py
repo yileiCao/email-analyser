@@ -163,7 +163,7 @@ def mail_list():
     filters = request.args.to_dict()
     query = build_select_statement(filters)
     mails = mail_search_statement(query)
-    return render_template('mail_list.html', emails=mails)
+    return render_template('mail_list.html', emails=mails, request=filters)
 
 
 @app.route('/view_mail/<mail_id>', methods=('GET', 'POST'))
