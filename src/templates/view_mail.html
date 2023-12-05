@@ -12,9 +12,9 @@
         </tr>
         <tr>
             <td>{{data['name']}}</td>
-            <td>{{data['email_address']}}</td>
+            <td><a href="/mail_list/?fr={{data['email_address']}}">{{data['email_address']}}</a></td>
             <td>{{data['name_1']}}</td>
-            <td>{{data['email_address_1']}}</td>
+            <td><a href="/mail_list/?to={{data['email_address_1']}}">{{data['email_address_1']}}</a></td>
             <td>{{data['time']}}</td>
         </tr>
         <tr>
@@ -23,7 +23,11 @@
         </tr>
         <tr>
             <td>Keyword</td>
-            <td colspan="4">{{data['keyword']}}</td>
+            <td colspan="4">
+                {% for kw in s_kw %}
+                <a href="/mail_list/?ke={{kw}}">{{kw}}</a>;&nbsp;
+                {% endfor %}
+            </td>
         </tr>
     </table>
 

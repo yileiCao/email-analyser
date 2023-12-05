@@ -197,12 +197,13 @@ def view_mail(mail_id):
         keywords = ', '.join([i[0] for i in key_word])
         params = request.form.to_dict()
         params['keyword'] = keywords
+    s_kw = keywords.replace(',', ' ').split()
     for keyword in keywords.replace(',', ' ').split():
         keyword = keyword.strip()
         for word in (keyword, keyword.upper(), keyword.capitalize()):
             plain_text = plain_text.replace(f'{word}', f'<mark style="background-color:burlywood;">{word}</mark>')
     plain_text = Markup(plain_text)
-    return render_template('view_mail.html', data=mail, text=plain_text, request=params)
+    return render_template('view_mail.html', data=mail, text=plain_text, request=params, s_kw=s_kw)
 
 
 @app.route('/delete_mail/<mail_id>', methods=['POST'])
