@@ -28,11 +28,43 @@
     </table>
 
     <form method="post">
+        <h4>Generate keywords with different parameters.</h4>
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+            <td><label>keyword length: </label></td>
+            <td><input type="number" name="range_from" min="1" style="width: 80px;"
+                   placeholder="1" class="form-control"
+                   value="{{ request['range_from'] }}"></td>
+            <td><input type="number" name="range_to" min="1" style="width: 80px;"
+                   placeholder="1" class="form-control"
+                   value="{{ request['range_to'] }}"></td>
+            </tr>
+            <tr>
+            <td><label>diversity: </label></td>
+            <td><input type="number" step="0.01" name="diversity" max="1" min="0" style="width: 80px;"
+                   placeholder="0.5" class="form-control"
+                   value="{{ request['diversity'] }}"></td>
+            </tr>
+            <tr>
+            <td><label>keyword number:</label></td>
+            <td><input type="number" name="number" min="1" style="width: 80px;"
+                   placeholder="5" class="form-control"
+                   value="{{ request['number'] }}"></td>
+            </tr>
+            <tr>
+            <td><button type="submit" class="btn btn-primary" name="generate_keyword">
+                Generate</button></td>
+            </tr>
+        </table>
+    </form>
+    <br>
+
+    <form method="post">
         <div class="form-group">
             <label>Update Keyword</label><br>
             <input type="text" name="new_keyword"
                    placeholder="Subject Keyword" class="form-control"
-                   value="">
+                   value="{{ request['keyword'] }}">
         </div>
         <div class="form-group">
             <button type="submit" class="btn btn-primary" name="edit_keyword"
@@ -40,12 +72,13 @@
                 Manually Edit Keyword</button>
         </div>
     </form>
+    <br>
 
     <pre>{{text}}</pre>
 
     <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
         <input type="hidden" name="extra_submit_param" >
-        <button type="submit" name="submit_param" class="link-button"
+        <button type="submit" name="submit_param" class="btn btn-danger"
                 onclick="return confirm('Do you want to permanently delete mail {{data['id']}}?');">
             Delete This Mail
         </button>

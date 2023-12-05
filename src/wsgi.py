@@ -6,6 +6,7 @@ from src.db_func import insert_into_tables, print_all_table, build_select_statem
     update_mail_keyword_with_id
 from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs, data_extract_keyword
 from database import db_session, init_db, engine
+from src.keybert_func import extract_keyword
 
 app = Flask(__name__)
 
@@ -184,12 +185,24 @@ def view_mail(mail_id):
     mail_server_id = mail[4]  # mail_server_id
     plain_text = generate_data_from_msgs(service, [{'id': mail_server_id}])[0]['text']
     keywords = mail[6]
+    params = {}
+    if request.method == 'POST' and 'generate_keyword' in request.form:
+
+        kw_len_fr = request.form['range_from'] or 1
+        kw_len_to = request.form['range_to'] or 3
+        diversity = request.form['diversity'] or 0.5
+        kw_num = request.form['number'] or 5
+        key_word = extract_keyword(plain_text, kw_len_fr=int(kw_len_fr), kw_len_to=int(kw_len_to),
+                                   diversity=float(diversity), kw_num=int(kw_num))
+        keywords = ', '.join([i[0] for i in key_word])
+        params = request.form.to_dict()
+        params['keyword'] = keywords
     for keyword in keywords.replace(',', ' ').split():
         keyword = keyword.strip()
         for word in (keyword, keyword.upper(), keyword.capitalize()):
-            plain_text = plain_text.replace(f'{" " + word}', f'<mark style="background-color:burlywood;">{" " + word}</mark>')
+            plain_text = plain_text.replace(f'{word}', f'<mark style="background-color:burlywood;">{word}</mark>')
     plain_text = Markup(plain_text)
-    return render_template('view_mail.html', data=mail, text=plain_text)
+    return render_template('view_mail.html', data=mail, text=plain_text, request=params)
 
 
 @app.route('/delete_mail/<mail_id>', methods=['POST'])
