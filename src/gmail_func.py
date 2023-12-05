@@ -1,5 +1,6 @@
 import os
 import pickle
+from dateutil import parser
 from datetime import datetime, timezone
 
 # Gmail API utils
@@ -82,12 +83,7 @@ def collect_head_info(headers, row):
         if name.lower() == "subject":
             row["subject"] = value
         if name.lower() == "date":
-            # date values have two formats
-            try:
-                row["time"] = datetime.strptime(value, '%a, %d %b %Y %H:%M:%S %z')
-            except ValueError:
-                row["time"] = datetime.strptime(value, '%a, %d %b %Y %H:%M:%S %z (%Z)')
-            row["time"] = row["time"].astimezone(timezone.utc)
+            row["time"] = parser.parse(value).astimezone(timezone.utc)
 
 
 def find_content(payload, content_type):

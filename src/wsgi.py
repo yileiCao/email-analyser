@@ -60,26 +60,32 @@ def load_mails():
             if email_to:
                 query += f"to:{email_to} "
             encoded_query = query.replace(' ', '0x20')
-            return redirect(f'/raw_mail_list/{encoded_query}>/1')
+            return redirect(f'/raw_mail_list/{encoded_query}/1')
     return render_template('load_mails.html')
 
 
 @app.route('/raw_mail_list/<encoded_query>/<page_num>', methods=('GET', 'POST'))
 def raw_mail_list(encoded_query, page_num):
-    ## TODO: page num support
+    message_per_page = 10
+    page_num = int(page_num)
     query = encoded_query.replace('0x20', ' ')
     results = search_messages(service, query)
     # print(f"Found {len(results)} results.")
+    is_end = False
+    total_num = len(results)
+    if total_num <= message_per_page * page_num:
+        is_end = True
+    results = results[message_per_page * (page_num - 1):message_per_page * page_num]
     ## TODO: body text not needed here
     data = generate_data_from_msgs(service, results)
 
     if request.method == 'GET':
-        flash(f'Found {len(results)} matching mails!')
+        flash(f'Found {total_num} matching mails, now showing mails from {message_per_page * (page_num - 1) + 1} to '
+              f'{message_per_page * (page_num - 1) + len(results)}')
         return render_template('raw_mail_list.html', emails=data)
     if request.method == 'POST':
         if 'confirm-emails' in request.form:
             # for each email matched, read it (output plain/text to console & save HTML and attachments)
-            data_extract_keyword(data)
             inserted_data = []
             for name in list(request.form.keys()):
                 if name.startswith('mail'):
@@ -87,11 +93,15 @@ def raw_mail_list(encoded_query, page_num):
                     row = data[num]
                     row.pop('id')
                     inserted_data.append(row)
+            data_extract_keyword(inserted_data)
             with Session(engine) as session:
                 num_succeed = insert_into_tables(session, inserted_data)
                 flash(f"You've successfully added {num_succeed} new mails!")  # info, error, warning
                 # print_all_table(session)
-                return redirect(url_for('load_mails'))
+                if is_end:
+                    return redirect(url_for('load_mails'))
+                else:
+                    return redirect(f'/raw_mail_list/{encoded_query}>/{page_num+1}')
 
 
 @app.route('/search_mails')
