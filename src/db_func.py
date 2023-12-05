@@ -85,6 +85,11 @@ def delete_mail_with_id(session, mail_id):
     session.commit()
 
 
+def update_mail_keyword_with_id(session, mail_id, new_keyword):
+    session.query(Mail).filter(Mail.id == mail_id).update({Mail.keyword: new_keyword})
+    session.commit()
+
+
 if __name__ == '__main__':
     data = [
         {'mail_server_id': '18bfd1199e673cc7', 'sender': '"LEGO® Shop" <Noreply@t.crm.lego.com>',

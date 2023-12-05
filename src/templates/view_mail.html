@@ -5,30 +5,47 @@
 
 
     <table border='5' class='table table-striped' style='border-collapse:separate'>
-        <thead>
-            <tr>
-                <td>Sender</td>
-                <td>Recipient</td>
-                <td>Time</td>
-                <td>Subject</td>
-                <td>Keyword</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{data['email_address']}}</td>
-                <td>{{data['email_address_1']}}</td>
-                <td>{{data['time']}}</td>
-                <td>{{data['subject']}}</td>
-                <td>{{data['keyword']}}</td>
-            </tr>
-        </tbody>
+        <tr>
+            <td colspan="2">Sender</td>
+            <td colspan="2">Recipient</td>
+            <td>Time</td>
+        </tr>
+        <tr>
+            <td>{{data['name']}}</td>
+            <td>{{data['email_address']}}</td>
+            <td>{{data['name_1']}}</td>
+            <td>{{data['email_address_1']}}</td>
+            <td>{{data['time']}}</td>
+        </tr>
+        <tr>
+            <td>Subject</td>
+            <td colspan="4">{{data['subject']}}</td>
+        </tr>
+        <tr>
+            <td>Keyword</td>
+            <td colspan="4">{{data['keyword']}}</td>
+        </tr>
     </table>
+
+    <form method="post">
+        <div class="form-group">
+            <label>Update Keyword</label><br>
+            <input type="text" name="new_keyword"
+                   placeholder="Subject Keyword" class="form-control"
+                   value="">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" name="edit_keyword"
+                    onclick="return confirm('Do you want to manually change the keywords?');">
+                Manually Edit Keyword</button>
+        </div>
+    </form>
+
     <pre>{{text}}</pre>
 
     <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
-        <input type="hidden" name="extra_submit_param" value="extra_submit_value">
-        <button type="submit" name="submit_param" value="submit_value" class="link-button"
+        <input type="hidden" name="extra_submit_param" >
+        <button type="submit" name="submit_param" class="link-button"
                 onclick="return confirm('Do you want to permanently delete mail {{data['id']}}?');">
             Delete This Mail
         </button>

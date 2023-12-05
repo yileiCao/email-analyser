@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, url_for, flash, redirect, esc
 from markupsafe import Markup
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
-from src.db_func import insert_into_tables, print_all_table, build_select_statement, delete_mail_with_id
+from src.db_func import insert_into_tables, print_all_table, build_select_statement, delete_mail_with_id, \
+    update_mail_keyword_with_id
 from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs, data_extract_keyword
 from database import db_session, init_db, engine
 
@@ -168,6 +169,14 @@ def mail_list():
 
 @app.route('/view_mail/<mail_id>', methods=('GET', 'POST'))
 def view_mail(mail_id):
+    if request.method == 'POST':
+        if 'edit_keyword' in request.form:
+            new_keyword = request.form['new_keyword']
+            if len(new_keyword) > 0:
+                with Session(engine) as session:
+                    update_mail_keyword_with_id(session, mail_id, new_keyword)
+                    flash(f'Mail {mail_id} keyword')
+                return redirect(url_for('view_mail', mail_id=mail_id))
     mail_id = int(mail_id)
     filters = {'id': mail_id}
     query = build_select_statement(filters)
