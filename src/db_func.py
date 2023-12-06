@@ -71,9 +71,12 @@ def build_select_statement(filters):
     # if filters.get('ke'):  # keyword
     #     query = query.where(Mail.keyword.like(f"%{filters['ke']}%"))
     if filters.get('ke'):  # keyword
-        word_set_en = get_lemmas_en(filters['ke'])
-        word_set_jpn = get_lemmas_jpn(filters['ke'])
-        word_set = '|'.join([word_set_en, word_set_jpn])
+        if filters.get('se'):
+            word_set_en = get_lemmas_en(filters['ke'])
+            word_set_jpn = get_lemmas_jpn(filters['ke'])
+            word_set = '|'.join([word_set_en, word_set_jpn])
+        else:
+            word_set = filters['ke']
         query = query.where(Mail.keyword.regexp_match(f"({word_set})"))
     if filters.get('id') is not None:
         query = query.where(Mail.id == filters['id'])

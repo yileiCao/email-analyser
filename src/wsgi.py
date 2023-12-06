@@ -149,6 +149,7 @@ def mail_list():
         date_before = request.form['date_before']
         email_from = request.form['email_from']
         email_to = request.form['email_to']
+        is_kw_semantic = request.form.get('is_kw_semantic')
         query = "?"
         if email_from:
             query += f"fr={email_from}&"
@@ -160,6 +161,8 @@ def mail_list():
             query += f"af={date_after}&"
         if keyword:
             query += f"ke={keyword}&"
+        if is_kw_semantic:
+            query += f"se={is_kw_semantic}&"
         query = query[:-1]
         return redirect(f'/mail_list/{query}')
     filters = request.args.to_dict()
