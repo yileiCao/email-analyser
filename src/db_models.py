@@ -39,6 +39,7 @@ class Mail(Base):
     recipient = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     time = mapped_column(DateTime, nullable=False)
     mail_server_id = mapped_column(String(50), nullable=False)
+    mail_thread_id = mapped_column(String(50), nullable=False, default=mail_server_id)
     subject = mapped_column(String(200), nullable=True)
     keyword = mapped_column(String(200), nullable=True)
     sender_user = relationship("User", primaryjoin=sender==User.id)

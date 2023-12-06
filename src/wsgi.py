@@ -150,6 +150,7 @@ def mail_list():
         email_from = request.form['email_from']
         email_to = request.form['email_to']
         is_kw_semantic = request.form.get('is_kw_semantic')
+        email_thread = request.form.get('email_thread')
         query = "?"
         if email_from:
             query += f"fr={email_from}&"
@@ -163,6 +164,8 @@ def mail_list():
             query += f"ke={keyword}&"
         if is_kw_semantic:
             query += f"se={is_kw_semantic}&"
+        if email_thread:
+            query += f"et={email_thread}&"
         query = query[:-1]
         return redirect(f'/mail_list/{query}')
     filters = request.args.to_dict()

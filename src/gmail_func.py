@@ -103,9 +103,8 @@ def generate_data_from_msgs(service, gmail_msgs):
     """
     mails = []
     for idx, message in enumerate(gmail_msgs):
-        row = {"id": idx, "mail_server_id": message['id']}
         msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-
+        row = {"id": idx, "mail_server_id": msg['id'], "mail_thread_id": msg['threadId']}
         payload = msg['payload']
         headers = payload.get("headers")
         if headers:

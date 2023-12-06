@@ -57,7 +57,7 @@ def build_select_statement(filters):
     userS = aliased(User, name="userS")
     query = \
         select(userS.name, userS.email_address, userR.name, userR.email_address,
-               Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time, Mail.id) \
+               Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time, Mail.id, Mail.mail_thread_id) \
             .join(userS, Mail.sender_user).join(userR, Mail.recipient_user) \
             .order_by(Mail.time.desc())
     if filters.get("fr"):  # sender email_address
@@ -80,6 +80,8 @@ def build_select_statement(filters):
         query = query.where(Mail.keyword.regexp_match(f"({word_set})"))
     if filters.get('id') is not None:
         query = query.where(Mail.id == filters['id'])
+    if filters.get('et'):
+        query = query.where(Mail.mail_thread_id == filters['et'])
     return query
 
 

@@ -19,7 +19,8 @@
         </tr>
         <tr>
             <td>Subject</td>
-            <td colspan="4">{{data['subject']}}</td>
+            <td colspan="3">{{data['subject']}}</td>
+            <td><a href="/mail_list/?et={{data['mail_thread_id']}}">Related mails</a></td>
         </tr>
         <tr>
             <td>Keyword</td>
@@ -40,7 +41,7 @@
                    placeholder="1" class="form-control"
                    value="{{ request['range_from'] }}"></td>
             <td><input type="number" name="range_to" min="1" style="width: 80px;"
-                   placeholder="1" class="form-control"
+                   placeholder="3" class="form-control"
                    value="{{ request['range_to'] }}"></td>
             </tr>
             <tr>
