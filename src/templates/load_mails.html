@@ -3,35 +3,42 @@
 {% block content %}
 <h1>{% block title %} Load Emails {% endblock %}</h1>
 
-<form method="post">
-    <div class="form-group">
-        <label>Keyword</label>
-        <input type="text" name="keyword"
-               placeholder="Subject Keyword" class="form-control">
+<form class="row g-3" method="post">
+    <div class="col-10">
+        <label for="keyword" class="form-label">Keyword</label>
+        <input type="text" name="keyword" id="keyword"
+               placeholder="Keyword" class="form-control">
     </div>
 
-    <div class="form-group">
-        <label>Email_from</label>
-        <input type="email" name="email_from"
+    <div class="col-md-5">
+        <label for="email_from" class="form-label">Email From</label>
+        <input type="email" name="email_from" id="email_from"
                placeholder="Email From" class="form-control">
     </div>
 
-    <div class="form-group">
-        <label>Email_to</label>
-        <input type="email" name="email_to"
+    <div class="col-md-5">
+        <label for="email_to" class="form-label">Email To</label>
+        <input type="email" name="email_to" id="email_to"
                placeholder="Email To" class="form-control">
     </div>
 
-    <div class="form-group">
-        <label>After</label>
-        <input type="date" name="date_after"
+
+    <div class="col-md-3">
+        <label for="date_after" class="form-label">After</label>
+        <input type="date" name="date_after" id="date_after"
                placeholder="2023-11-01">
     </div>
 
-    <div class="form-group">
-        <label>Before</label>
-        <input type="date" name="date_before"
+    <div class="col-md-3">
+        <label for="date_before" class="form-label">Before</label>
+        <input type="date" name="date_before" id="date_before"
                placeholder="2023-12-01">
+    </div>
+
+    <div class="col-10">
+        <label for="filter_text" class="form-label">Filter Text</label>
+        <input type="text" name="filter_text" id="filter_text"
+               placeholder="in:inbox is:unread has:attachment is:important" class="form-control">
     </div>
 
     <div class="form-group">

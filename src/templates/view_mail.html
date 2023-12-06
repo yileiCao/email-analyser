@@ -32,6 +32,7 @@
         </tr>
     </table>
 
+    <div>
     <form method="post">
         <h4>Generate keywords with different parameters.</h4>
         <table cellpadding="0" cellspacing="0" border="0">
@@ -63,11 +64,12 @@
         </table>
     </form>
     <br>
-
+    </div>
+    <div>
     <form method="post">
         <div class="form-group">
-            <label>Update Keyword</label><br>
-            <input type="text" name="new_keyword"
+            <label for="new_keyword">Update Keyword</label><br>
+            <input type="text" name="new_keyword" id="new_keyword"
                    placeholder="Subject Keyword" class="form-control"
                    value="{{ request['keyword'] }}">
         </div>
@@ -78,7 +80,9 @@
         </div>
     </form>
     <br>
+    </div>
 
+    <div>
     <pre>{{text}}</pre>
 
     <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
@@ -88,5 +92,5 @@
             Delete This Mail
         </button>
     </form>
-
+    </div>
 {% endblock %}

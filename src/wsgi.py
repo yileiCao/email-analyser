@@ -49,7 +49,7 @@ def load_mails():
             date_before = request.form['date_before']
             email_from = request.form['email_from']
             email_to = request.form['email_to']
-
+            filter_text = request.form['filter_text']
             query = ""
             if keyword:
                 query += f"{keyword} "
@@ -61,6 +61,8 @@ def load_mails():
                 query += f"from:{email_from} "
             if email_to:
                 query += f"to:{email_to} "
+            if filter_text:
+                query += filter_text
             encoded_query = query.replace(' ', '0x20')
             return redirect(f'/raw_mail_list/{encoded_query}/1')
     return render_template('load_mails.html')
@@ -98,8 +100,8 @@ def raw_mail_list(encoded_query, page_num):
             data_extract_keyword(inserted_data)
             with Session(engine) as session:
                 num_succeed = insert_into_tables(session, inserted_data)
-                flash(f"You've successfully added {num_succeed} new mails!")  # info, error, warning
-                # print_all_table(session)
+                num_failed = len(inserted_data) - num_succeed
+                flash(f"You've successfully added {num_succeed} new mails! {num_failed} mails already in DB.")  # info, error, warning
                 if is_end:
                     return redirect(url_for('load_mails'))
                 else:
