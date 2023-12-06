@@ -63,6 +63,7 @@ def parse_body(body, content_type):
     """
     Utility function that parses the content of an email partition
     """
+    text = ''
     if content_type == "text/plain":
         text = urlsafe_b64decode(body).decode()
     return text

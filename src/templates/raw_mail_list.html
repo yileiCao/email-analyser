@@ -3,26 +3,31 @@
 {% block content %}
     <h1>{% block title %} Confirm Email Insertion{% endblock %}</h1>
     <form method="post">
-        <table border='1' style='border-collapse:collapse'>
-            <tr>
+        <table border='1' class='table table-striped' style='border-collapse:collapse'>
+            <thead>
+                <tr>
+
                 <td></td>
                 <td>Sender</td>
                 <td>Recipient</td>
                 <td>Time</td>
                 <td>Subject</td>
-            </tr>
-        {% for mail in emails %}
-            <tr>
-                <td>
-                    <input type="checkbox" id="mail{{mail['id']}}" name="mail{{mail['id']}}" value="" checked>
-<!--                    <label for="mail{{mail['id']}}">{{mail['subject']}}</label><br>-->
-                </td>
-                <td>{{mail['sender']}}</td>
-                <td>{{mail['recipient']}}</td>
-                <td>{{mail['time']}}</td>
-                <td>{{mail['subject']}}</td>
-            </tr>
-        {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for mail in emails %}
+                <tr>
+                    <td>
+                        <input type="checkbox" id="mail{{mail['id']}}" name="mail{{mail['id']}}" value="" checked>
+    <!--                    <label for="mail{{mail['id']}}">{{mail['subject']}}</label><br>-->
+                    </td>
+                    <td>{{mail['sender']}}</td>
+                    <td>{{mail['recipient']}}</td>
+                    <td>{{mail['time']}}</td>
+                    <td>{{mail['subject']}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
         <button type="submit" class="btn btn-primary" name="confirm-emails">Confirm</button>
     </form>
