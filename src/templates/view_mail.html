@@ -59,25 +59,24 @@
             </tr>
             <tr>
             <td><button type="submit" class="btn btn-primary" name="generate_keyword">
-                Generate</button></td>
+                Generate Keywords</button></td>
             </tr>
         </table>
     </form>
     <br>
     </div>
+
     <div>
     <form method="post">
+        <h4>Manually edit keywords</h4>
         <div class="form-group">
-            <label for="new_keyword">Update Keyword</label><br>
             <input type="text" name="new_keyword" id="new_keyword"
                    placeholder="Subject Keyword" class="form-control"
                    value="{{ request['keyword'] }}">
         </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary" name="edit_keyword"
-                    onclick="return confirm('Do you want to manually change the keywords?');">
-                Manually Edit Keyword</button>
-        </div>
+        <button type="submit" class="btn btn-primary" name="edit_keyword"
+                onclick="return confirm('Do you want to manually change the keywords?');">
+            Update</button>
     </form>
     <br>
     </div>

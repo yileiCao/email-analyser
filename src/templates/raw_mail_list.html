@@ -19,7 +19,6 @@
                 <tr>
                     <td>
                         <input type="checkbox" id="mail{{mail['id']}}" name="mail{{mail['id']}}" value="" checked>
-    <!--                    <label for="mail{{mail['id']}}">{{mail['subject']}}</label><br>-->
                     </td>
                     <td>{{mail['sender']}}</td>
                     <td>{{mail['recipient']}}</td>
@@ -29,7 +28,7 @@
             {% endfor %}
             </tbody>
         </table>
-        <button type="submit" class="btn btn-primary" name="confirm-emails">Confirm</button>
+        <button type="submit" class="btn btn-primary" name="confirm-emails">Confirm and Insert</button>
     </form>
 
 
