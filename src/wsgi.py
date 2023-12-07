@@ -24,7 +24,7 @@ def login_required(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
-            flash('You need to login first.')
+            flash('You need to login first.', 'warning')
             return redirect(url_for('home'))
     return wrap
 
@@ -34,23 +34,13 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def home():
-    # error = None
-    # if request.method == 'POST':
-    #     if request.form['username'] != 'yilei' or request.form['password'] != 'admin':
-    #         error = 'Invalid Credentials. Please try again.'
-    #     else:
-    #         session['logged_in'] = True
-    #         global service
-    #         service = gmail_authenticate(request.form['username'])
-    #         flash('You were logged in.')
-    #         return redirect(url_for('mail_list'))
-    # return render_template('home.html')
-    return redirect(url_for('login'))
+    if session.get('logged_in') is None:
+        return redirect(url_for('login'))
+    return render_template('home.html')
 
 
-@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
@@ -62,11 +52,11 @@ def login():
             session['logged_in'] = True
             session['id'] = account.id
             session['username'] = account.user_name
-            flash('Logged in successfully !')
+            flash('Logged in successfully !', 'success')
             return redirect(url_for('mail_list'))
         else:
-            flash('Incorrect username / password !')
-    return render_template('home.html')
+            flash('Incorrect username / password !', 'danger')
+    return render_template('login.html')
 
 
 @app.route('/logout')
@@ -75,7 +65,7 @@ def logout():
     session.pop('logged_in', None)
     session.pop('id', None)
     session.pop('username', None)
-    flash('You were logged out.')
+    flash('You were logged out.', 'info')
     return redirect(url_for('login'))
 
 
@@ -88,10 +78,10 @@ def register():
         with Session(engine) as db_session:
             status = insert_user(db_session, username, password)
             if status:
-                flash('You have successfully registered !')
+                flash('You have successfully registered !', 'success')
                 return redirect(url_for('login'))
             else:
-                flash('Account already exists !')
+                flash('Account already exists !', 'warning')
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('register.html')
@@ -160,7 +150,7 @@ def raw_mail_list(encoded_query, page_num):
 
     if request.method == 'GET':
         flash(f'Found {total_num} matching mails, now showing mails from {message_per_page * (page_num - 1) + 1} to '
-              f'{message_per_page * (page_num - 1) + len(msg_ids)}')
+              f'{message_per_page * (page_num - 1) + len(msg_ids)}', 'info')
         return render_template('raw_mail_list.html', emails=metadata)
     if request.method == 'POST':
         if 'confirm-emails' in request.form:
@@ -177,7 +167,7 @@ def raw_mail_list(encoded_query, page_num):
             with Session(engine) as db_session:
                 num_succeed = insert_into_tables(db_session, inserted_data)
                 num_failed = len(inserted_data) - num_succeed
-                flash(f"You've successfully added {num_succeed} new mails! {num_failed} mails already in DB.")
+                flash(f"You've successfully added {num_succeed} new mails! {num_failed} mails already in DB.", 'success')
                 # info, error, warning
                 if is_end:
                     return redirect(url_for('load_mails'))
@@ -264,7 +254,7 @@ def view_mail(mail_id):
             if len(new_keyword) > 0:
                 with Session(engine) as db_session:
                     update_mail_keyword_with_id(db_session, mail_id, new_keyword)
-                    flash(f'Mail {mail_id} keyword')
+                    flash(f'Mail {mail_id} keyword updated', 'success')
                 return redirect(url_for('view_mail', mail_id=mail_id))
     mail_id = int(mail_id)
     filters = {'id': mail_id}
@@ -301,7 +291,7 @@ def delete_mail(mail_id):
     if request.method == 'POST':
         with Session(engine) as db_session:
             delete_mail_with_id(db_session, mail_id)
-            flash(f'Mail {mail_id} successfully removed')
+            flash(f'Mail {mail_id} successfully removed', 'success')
         return redirect(url_for('mail_list'))
 
 

@@ -15,7 +15,7 @@ def get_user(db_session, username, password):
 
 def insert_user(db_session, username, password):
     if db_session.execute(select(User.id).where(
-            User.user_name == username, User.password == password)).first():
+            User.user_name == username)).first():
         return False
     else:
         db_session.execute(insert(User).values(user_name=username, password=password))

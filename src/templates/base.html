@@ -31,13 +31,20 @@
             </li>
             </ul>
         </div>
+          <a class="nav-link disabled" aria-disabled="true">Hello {{ session.username }}</a>
+          {% if session.username %}
           <a class="nav-link" href="{{url_for('logout')}}" id="logoutBtn">
               <button class="btn btn-danger" onclick="return confirm('Are you sure to logout?')">Logout</button></a>
+          {% endif %}
       </nav>
     <div class="container">
-        {% for message in get_flashed_messages() %}
-            <div class="info alert-success">{{ message }}</div>
-        {% endfor %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{category}}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
         {% block content %} {% endblock %}
     </div>
 
