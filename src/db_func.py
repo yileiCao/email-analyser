@@ -3,8 +3,23 @@ from datetime import datetime
 from sqlalchemy import insert, create_engine, select, text, func
 from sqlalchemy.orm import Session, aliased
 
-from src.db_models import Mail, Customer, Base
+from src.db_models import Mail, Customer, Base, User
 from src.wordnet_func import get_lemmas_en, get_lemmas_jpn
+
+
+def get_user(session, username, password):
+    return session.execute(select(User.id, User.user_name).where(
+        User.user_name == username, User.password == password)).first()
+
+
+def insert_user(session, username, password):
+    if session.execute(select(User.id).where(
+            User.user_name == username, User.password == password)).first():
+        return False
+    else:
+        session.execute(insert(User).values(user_name=username, password=password))
+        session.commit()
+        return True
 
 
 def insert_into_tables(session, mail_data):
@@ -137,7 +152,7 @@ if __name__ == '__main__':
         # statement = statement.where(userS.name == 'yilei CAO')
         # statement = statement.where(func.date(Mail.time) <= '2023-11-23')
         # statement = statement.where(Mail.keyword.like('%thank%'))
-        statement = select(Mail)
+        statement = select(User)
         print(statement)
         rows = session.execute(statement).all()
         print(rows)

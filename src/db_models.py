@@ -17,9 +17,21 @@ class Base(DeclarativeBase):
     pass
 
 
-class Customer(Base):
+class User(Base):
     __table_args__ = {'extend_existing': True}
     __tablename__ = "users"
+    id = mapped_column(Integer, primary_key=True)
+    user_name = mapped_column(String(50), nullable=True, unique=True)
+    password = mapped_column(String(50), nullable=True)
+
+    def __repr__(self) -> str:
+        return f"User(id={self.id!r}, user_name={self.user_name!r}, " \
+               f"password={self.password!r})"
+
+
+class Customer(Base):
+    __table_args__ = {'extend_existing': True}
+    __tablename__ = "customers"
     id = mapped_column(Integer, primary_key=True)
     email_address = mapped_column(String(50), nullable=False)
     name = mapped_column(String(50), nullable=True)
@@ -41,8 +53,8 @@ class Mail(Base):
     __table_args__ = {'extend_existing': True}
     __tablename__ = "mails"
     id = mapped_column(Integer, primary_key=True)
-    sender = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
-    recipient = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    sender = mapped_column(Integer, ForeignKey('customers.id'), nullable=False)
+    recipient = mapped_column(Integer, ForeignKey('customers.id'), nullable=False)
     time = mapped_column(DateTime, nullable=False)
     mail_server_id = mapped_column(String(50), nullable=False)
     mail_thread_id = mapped_column(String(50), nullable=False, default=same_as('mail_server_id'))

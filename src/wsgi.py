@@ -4,7 +4,7 @@ from markupsafe import Markup
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
 from src.db_func import insert_into_tables, print_all_table, build_select_statement, delete_mail_with_id, \
-    update_mail_keyword_with_id
+    update_mail_keyword_with_id, get_user, insert_user
 from src.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, data_extract_keyword, \
     get_text_from_server
 from database import db_session, init_db, engine
@@ -36,16 +36,38 @@ def shutdown_session(exception=None):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != 'yilei' or request.form['password'] != 'admin':
-            error = 'Invalid Credentials. Please try again.'
-        else:
+    # error = None
+    # if request.method == 'POST':
+    #     if request.form['username'] != 'yilei' or request.form['password'] != 'admin':
+    #         error = 'Invalid Credentials. Please try again.'
+    #     else:
+    #         session['logged_in'] = True
+    #         global service
+    #         service = gmail_authenticate(request.form['username'])
+    #         flash('You were logged in.')
+    #         return redirect(url_for('mail_list'))
+    # return render_template('home.html')
+    return redirect(url_for('login'))
+
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        username = request.form['username']
+        password = request.form['password']
+        with Session(engine) as db_session:
+            account = get_user(db_session, username, password)
+        if account:
             session['logged_in'] = True
+            session['id'] = account.id
+            session['username'] = account.user_name
             global service
             service = gmail_authenticate(request.form['username'])
-            flash('You were logged in.')
+            flash('Logged in successfully !')
             return redirect(url_for('mail_list'))
+        else:
+            flash('Incorrect username / password !')
     return render_template('home.html')
 
 
@@ -53,8 +75,28 @@ def home():
 @login_required
 def logout():
     session.pop('logged_in', None)
+    session.pop('id', None)
+    session.pop('username', None)
     flash('You were logged out.')
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
+
+@app.route('/register', methods =['GET', 'POST'])
+def register():
+    if request.method == 'POST' \
+            and 'username' in request.form and 'password' in request.form:
+        username = request.form['username']
+        password = request.form['password']
+        with Session(engine) as session:
+            status = insert_user(session, username, password)
+            if status:
+                flash('You have successfully registered !')
+                return redirect(url_for('login'))
+            else:
+                flash('Account already exists !')
+    elif request.method == 'POST':
+        msg = 'Please fill out the form !'
+    return render_template('register.html')
 
 
 @app.route('/greet')
@@ -84,7 +126,7 @@ def load_mails():
             email_from = request.form['email_from']
             email_to = request.form['email_to']
             filter_text = request.form['filter_text']
-            query = ""
+            query = " "
             if keyword:
                 query += f"{keyword} "
             if date_after:
