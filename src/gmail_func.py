@@ -95,7 +95,7 @@ def find_content(payload, content_type):
             return find_content(part, content_type)
 
 
-def generate_data_from_msgs(service, gmail_msgs):
+def generate_metadata_from_msgs(service, gmail_msgs):
     """
     :param service: Gmail API `service`
     :param gmail_msgs: Gmail list API returned messages
@@ -103,14 +103,21 @@ def generate_data_from_msgs(service, gmail_msgs):
     """
     mails = []
     for idx, message in enumerate(gmail_msgs):
-        msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+        msg = service.users().messages().get(userId='me', id=message['id'], format='metadata').execute()
         row = {"id": idx, "mail_server_id": msg['id'], "mail_thread_id": msg['threadId']}
         payload = msg['payload']
         headers = payload.get("headers")
         if headers:
             collect_head_info(headers, row)
-        # print(row)
+        mails.append(row)
+    return mails
 
+
+def get_text_from_server(service, inserted_data):
+    for row in inserted_data:
+        mail_server_id = row["mail_server_id"]
+        msg = service.users().messages().get(userId='me', id=mail_server_id, format='full').execute()
+        payload = msg["payload"]
         # parts can be the message body, or attachments
         # if the msg contains only text part, 'parts' is empty while 'body' is not empty
         # if the msg contains multiple child MIME messages, 'body' is empty while 'parts' is not empty
@@ -122,8 +129,7 @@ def generate_data_from_msgs(service, gmail_msgs):
             ##  TODO: Is there any better sulution?
             text = text.split('\n> ')[0]  # try removing duplicated earlier emails
         row['text'] = text
-        mails.append(row)
-    return mails
+    return inserted_data
 
 
 def data_extract_keyword(data):
@@ -144,4 +150,4 @@ if __name__ == '__main__':
     results = search_messages(service, "RUTILEA") # only html: [{'id':'18be543e920c0596'}]
     # print(f"Found {len(results)} results.")
     # # for each email matched, read it (output plain/text to console & save HTML and attachments)
-    generate_data_from_msgs(service, results)
+    generate_metadata_from_msgs(service, results)

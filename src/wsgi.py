@@ -4,7 +4,8 @@ from sqlalchemy import text, select
 from sqlalchemy.orm import Session
 from src.db_func import insert_into_tables, print_all_table, build_select_statement, delete_mail_with_id, \
     update_mail_keyword_with_id
-from src.gmail_func import gmail_authenticate, search_messages, generate_data_from_msgs, data_extract_keyword
+from src.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, data_extract_keyword, \
+    get_text_from_server
 from database import db_session, init_db, engine
 from src.keybert_func import extract_keyword
 
@@ -73,20 +74,19 @@ def raw_mail_list(encoded_query, page_num):
     message_per_page = 10
     page_num = int(page_num)
     query = encoded_query.replace('0x20', ' ')
-    results = search_messages(service, query)
+    msg_ids = search_messages(service, query)
     # print(f"Found {len(results)} results.")
     is_end = False
-    total_num = len(results)
+    total_num = len(msg_ids)
     if total_num <= message_per_page * page_num:
         is_end = True
-    results = results[message_per_page * (page_num - 1):message_per_page * page_num]
-    ## TODO: body text not needed here
-    data = generate_data_from_msgs(service, results)
+    msg_ids = msg_ids[message_per_page * (page_num - 1):message_per_page * page_num]
+    metadata = generate_metadata_from_msgs(service, msg_ids)
 
     if request.method == 'GET':
         flash(f'Found {total_num} matching mails, now showing mails from {message_per_page * (page_num - 1) + 1} to '
-              f'{message_per_page * (page_num - 1) + len(results)}')
-        return render_template('raw_mail_list.html', emails=data)
+              f'{message_per_page * (page_num - 1) + len(msg_ids)}')
+        return render_template('raw_mail_list.html', emails=metadata)
     if request.method == 'POST':
         if 'confirm-emails' in request.form:
             # for each email matched, read it (output plain/text to console & save HTML and attachments)
@@ -94,9 +94,10 @@ def raw_mail_list(encoded_query, page_num):
             for name in list(request.form.keys()):
                 if name.startswith('mail'):
                     num = int(name[4:])
-                    row = data[num]
+                    row = metadata[num]
                     row.pop('id')
                     inserted_data.append(row)
+            get_text_from_server(service, inserted_data)
             data_extract_keyword(inserted_data)
             with Session(engine) as session:
                 num_succeed = insert_into_tables(session, inserted_data)
@@ -194,7 +195,7 @@ def view_mail(mail_id):
     query = build_select_statement(filters)
     mail = mail_search_statement(query)[0]
     mail_server_id = mail[4]  # mail_server_id
-    plain_text = generate_data_from_msgs(service, [{'id': mail_server_id}])[0]['text']
+    plain_text = get_text_from_server(service, [{'mail_server_id': mail_server_id}])[0]['text']
     keywords = mail[6]
     params = {}
     if request.method == 'POST' and 'generate_keyword' in request.form:
