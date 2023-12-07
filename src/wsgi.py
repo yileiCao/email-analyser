@@ -62,8 +62,6 @@ def login():
             session['logged_in'] = True
             session['id'] = account.id
             session['username'] = account.user_name
-            global service
-            service = gmail_authenticate(request.form['username'])
             flash('Logged in successfully !')
             return redirect(url_for('mail_list'))
         else:
@@ -87,8 +85,8 @@ def register():
             and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
-        with Session(engine) as session:
-            status = insert_user(session, username, password)
+        with Session(engine) as db_session:
+            status = insert_user(db_session, username, password)
             if status:
                 flash('You have successfully registered !')
                 return redirect(url_for('login'))
@@ -150,6 +148,7 @@ def raw_mail_list(encoded_query, page_num):
     message_per_page = 10
     page_num = int(page_num)
     query = encoded_query.replace('0x20', ' ')
+    service = gmail_authenticate(session['username'])
     msg_ids = search_messages(service, query)
     # print(f"Found {len(results)} results.")
     is_end = False
@@ -175,8 +174,8 @@ def raw_mail_list(encoded_query, page_num):
                     inserted_data.append(row)
             get_text_from_server(service, inserted_data)
             data_extract_keyword(inserted_data)
-            with Session(engine) as session:
-                num_succeed = insert_into_tables(session, inserted_data)
+            with Session(engine) as db_session:
+                num_succeed = insert_into_tables(db_session, inserted_data)
                 num_failed = len(inserted_data) - num_succeed
                 flash(f"You've successfully added {num_succeed} new mails! {num_failed} mails already in DB.")
                 # info, error, warning
@@ -187,14 +186,14 @@ def raw_mail_list(encoded_query, page_num):
 
 
 def mail_search_text(sql_request):
-    with Session(engine) as session:
-        mails = session.execute(text(sql_request)).fetchall()
+    with Session(engine) as db_session:
+        mails = db_session.execute(text(sql_request)).fetchall()
     return mails
 
 
 def mail_search_statement(query):
-    with Session(engine) as session:
-        mails = session.execute(query).fetchall()
+    with Session(engine) as db_session:
+        mails = db_session.execute(query).fetchall()
     return mails
 
 
@@ -263,8 +262,8 @@ def view_mail(mail_id):
         if 'edit_keyword' in request.form:
             new_keyword = request.form['new_keyword']
             if len(new_keyword) > 0:
-                with Session(engine) as session:
-                    update_mail_keyword_with_id(session, mail_id, new_keyword)
+                with Session(engine) as db_session:
+                    update_mail_keyword_with_id(db_session, mail_id, new_keyword)
                     flash(f'Mail {mail_id} keyword')
                 return redirect(url_for('view_mail', mail_id=mail_id))
     mail_id = int(mail_id)
@@ -272,6 +271,7 @@ def view_mail(mail_id):
     query = build_select_statement(filters)
     mail = mail_search_statement(query)[0]
     mail_server_id = mail[4]  # mail_server_id
+    service = gmail_authenticate(session['username'])
     plain_text = get_text_from_server(service, [{'mail_server_id': mail_server_id}])[0]['text']
     keywords = mail[6]
     params = {}
@@ -299,8 +299,8 @@ def view_mail(mail_id):
 @login_required
 def delete_mail(mail_id):
     if request.method == 'POST':
-        with Session(engine) as session:
-            delete_mail_with_id(session, mail_id)
+        with Session(engine) as db_session:
+            delete_mail_with_id(db_session, mail_id)
             flash(f'Mail {mail_id} successfully removed')
         return redirect(url_for('mail_list'))
 
@@ -309,5 +309,4 @@ if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     init_db()
-    service = None
     app.run(host='0.0.0.0', port='8001', debug=True)

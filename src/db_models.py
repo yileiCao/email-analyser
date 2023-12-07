@@ -60,6 +60,8 @@ class Mail(Base):
     mail_thread_id = mapped_column(String(50), nullable=False, default=same_as('mail_server_id'))
     subject = mapped_column(String(200), nullable=True)
     keyword = mapped_column(String(200), nullable=True)
+    owner = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    is_public = mapped_column(Boolean, nullable=False, default=False)
     sender_user = relationship("Customer", primaryjoin=sender == Customer.id)
     recipient_user = relationship("Customer", primaryjoin=recipient == Customer.id)
     # has_text = mapped_column(Boolean, nullable=False, default=False)
