@@ -19,6 +19,13 @@
         </div>
 
         <div class="col-12">
+            <label for="email_subject" class="form-label">Email Subject</label>
+            <input type="text" name="email_subject" id="email_subject"
+                   placeholder="Email Subject" class="form-control"
+                   value="{{ request['sbj'] }}">
+        </div>
+
+        <div class="col-12">
             <label for="email_thread" class="form-label">Email Thread</label>
             <input type="text" name="email_thread" id="email_thread"
                    placeholder="Email Thread" class="form-control"

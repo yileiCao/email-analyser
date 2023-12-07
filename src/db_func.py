@@ -68,10 +68,10 @@ def build_select_statement(filters):
         query = query.where(func.date(Mail.time) <= filters['be'])
     if filters.get('af'):  # time after
         query = query.where(func.date(Mail.time) >= filters['af'])
-    # if filters.get('ke'):  # keyword
-    #     query = query.where(Mail.keyword.like(f"%{filters['ke']}%"))
+    if filters.get('sbj'):  # email_subject
+        query = query.where(Mail.subject.like(f"%{filters['sbj']}%"))
     if filters.get('ke'):  # keyword
-        if filters.get('se'):
+        if filters.get('se'):  # semantic search
             word_set = get_lemmas_en(filters['ke'])
             if filters.get('jpn'):
                 word_set_jpn = get_lemmas_jpn(filters['ke'])
@@ -81,7 +81,7 @@ def build_select_statement(filters):
         query = query.where(Mail.keyword.regexp_match(f"({word_set})"))
     if filters.get('id') is not None:
         query = query.where(Mail.id == filters['id'])
-    if filters.get('et'):
+    if filters.get('et'):  # email_thread
         query = query.where(Mail.mail_thread_id == filters['et'])
     return query
 
