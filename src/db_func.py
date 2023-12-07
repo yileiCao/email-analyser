@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import insert, create_engine, select, text, func
 from sqlalchemy.orm import Session, aliased
 
-from src.db_models import Mail, User, Base
+from src.db_models import Mail, Customer, Base
 from src.wordnet_func import get_lemmas_en, get_lemmas_jpn
 
 
@@ -33,18 +33,18 @@ def get_user_id(session, user_info):
     if isinstance(name, str):
         name = name.strip('\'" ')
     addr = addr.strip('\'" <>')
-    id = session.execute(select(User.id).where(
-        User.email_address == addr,
-        User.name == name)).scalar()
+    id = session.execute(select(Customer.id).where(
+        Customer.email_address == addr,
+        Customer.name == name)).scalar()
     if not id:  # not included in user db, need new insertion
-        id = session.execute(insert(User).values(email_address=addr, name=name).returning(
-            User.id)).scalar()
+        id = session.execute(insert(Customer).values(email_address=addr, name=name).returning(
+            Customer.id)).scalar()
         session.commit()
     return id
 
 
 def print_all_table(session):
-    stmt = select(User)
+    stmt = select(Customer)
     for user in session.execute(stmt):
         print(user)
     stmt = select(Mail)
@@ -53,17 +53,17 @@ def print_all_table(session):
 
 
 def build_select_statement(filters):
-    userR = aliased(User, name="userR")
-    userS = aliased(User, name="userS")
+    customerR = aliased(Customer, name="customerR")
+    customerS = aliased(Customer, name="customerS")
     query = \
-        select(userS.name, userS.email_address, userR.name, userR.email_address,
+        select(customerS.name, customerS.email_address, customerR.name, customerR.email_address,
                Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time, Mail.id, Mail.mail_thread_id) \
-            .join(userS, Mail.sender_user).join(userR, Mail.recipient_user) \
+            .join(customerS, Mail.sender_user).join(customerR, Mail.recipient_user) \
             .order_by(Mail.time.desc())
     if filters.get("fr"):  # sender email_address
-        query = query.where(userS.email_address == filters["fr"])
+        query = query.where(customerS.email_address == filters["fr"])
     if filters.get("to"):  # recipient email_address
-        query = query.where(userR.email_address == filters["to"])
+        query = query.where(customerR.email_address == filters["to"])
     if filters.get('be'):  # time before
         query = query.where(func.date(Mail.time) <= filters['be'])
     if filters.get('af'):  # time after
@@ -127,8 +127,8 @@ if __name__ == '__main__':
         # mails = session.execute(text(sql_text)).all()
         # print(mails)
 
-        # userR = aliased(User, name="userR")
-        # userS = aliased(User, name="userS")
+        # userR = aliased(Customer, name="userR")
+        # userS = aliased(Customer, name="userS")
         # statement = \
         #     select(userS.name, userS.email_address, userR.name, userR.email_address,
         #            Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time)\

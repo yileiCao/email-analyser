@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, insert, select, func
 from sqlalchemy.orm import sessionmaker
 
 from src.db_func import get_user_id, insert_into_tables, print_all_table, build_select_statement
-from src.db_models import Base, User, Mail
+from src.db_models import Base, Customer, Mail
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def generate_session():
 def generate_user_data(session):
     data = [{'name': 'aa', 'email_address': 'aa@email.com'},
             {'name': 'bb', 'email_address': 'bb@bmail.com'}]
-    session.execute(insert(User), data)
+    session.execute(insert(Customer), data)
     session.commit()
 
 
@@ -67,7 +67,7 @@ def test_insert_into_tables(generate_session):
         sender_id, recipient_id = row
         assert isinstance(sender_id, int)
         assert isinstance(recipient_id, int)
-    user_count = generate_session.execute(select(func.count(User.id))).scalar()
+    user_count = generate_session.execute(select(func.count(Customer.id))).scalar()
     assert user_count == 4
 
 

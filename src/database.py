@@ -16,5 +16,5 @@ def init_db():
     # they will be registered properly on the metadata.  Otherwise
     # you will have to import them first before calling init_db()
 
-    from db_models import Base, User, Mail
+    from db_models import Base, Customer, Mail
     Base.metadata.create_all(bind=engine)

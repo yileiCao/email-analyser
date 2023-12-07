@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, escape
+from flask import Flask, render_template, request, url_for, flash, \
+    redirect, escape, session
 from markupsafe import Markup
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
@@ -8,8 +9,24 @@ from src.gmail_func import gmail_authenticate, search_messages, generate_metadat
     get_text_from_server
 from database import db_session, init_db, engine
 from src.keybert_func import extract_keyword
+from functools import wraps
 
 app = Flask(__name__)
+
+# config
+app.secret_key = 'my precious'
+
+
+# login required decorator
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('You need to login first.')
+            return redirect(url_for('home'))
+    return wrap
 
 
 @app.teardown_appcontext
@@ -17,12 +34,27 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    # conn = get_db_connection()
-    # posts = conn.execute('SELECT * FROM posts').fetchall()
-    # conn.close()
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'yilei' or request.form['password'] != 'admin':
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            session['logged_in'] = True
+            global service
+            service = gmail_authenticate(request.form['username'])
+            flash('You were logged in.')
+            return redirect(url_for('mail_list'))
     return render_template('home.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out.')
+    return redirect(url_for('home'))
 
 
 @app.route('/greet')
@@ -42,6 +74,7 @@ def greet():  # http://127.0.0.1:8000/greet?name=aa
 
 
 @app.route('/load_mails', methods=('GET', 'POST'))
+@login_required
 def load_mails():
     if request.method == 'POST':
         if 'get-emails' in request.form:
@@ -70,6 +103,7 @@ def load_mails():
 
 
 @app.route('/raw_mail_list/<encoded_query>/<page_num>', methods=('GET', 'POST'))
+@login_required
 def raw_mail_list(encoded_query, page_num):
     message_per_page = 10
     page_num = int(page_num)
@@ -102,17 +136,12 @@ def raw_mail_list(encoded_query, page_num):
             with Session(engine) as session:
                 num_succeed = insert_into_tables(session, inserted_data)
                 num_failed = len(inserted_data) - num_succeed
-                flash(f"You've successfully added {num_succeed} new mails! {num_failed} mails already in DB.")  # info, error, warning
+                flash(f"You've successfully added {num_succeed} new mails! {num_failed} mails already in DB.")
+                # info, error, warning
                 if is_end:
                     return redirect(url_for('load_mails'))
                 else:
                     return redirect(f'/raw_mail_list/{encoded_query}>/{page_num+1}')
-
-
-@app.route('/search_mails')
-def search_mails():
-    # return redirect(url_for('mail_list', encoded_sql='None'))
-    return redirect(url_for('mail_list'))
 
 
 def mail_search_text(sql_request):
@@ -129,6 +158,7 @@ def mail_search_statement(query):
 
 @app.route('/mail_list_text', defaults={'encoded_sql': None}, methods=['GET', 'POST'])
 @app.route('/mail_list_text/<encoded_sql>/', methods=('GET', 'POST'))
+@login_required
 def mail_list_text(encoded_sql):
     if request.method == 'POST':
         sql_request = request.form['sql_request']
@@ -145,6 +175,7 @@ def mail_list_text(encoded_sql):
 
 
 @app.route('/mail_list/', methods=('GET', 'POST'))
+@login_required
 def mail_list():
     if request.method == 'POST':
         keyword = request.form['keyword']
@@ -184,6 +215,7 @@ def mail_list():
 
 
 @app.route('/view_mail/<mail_id>', methods=('GET', 'POST'))
+@login_required
 def view_mail(mail_id):
     if request.method == 'POST':
         if 'edit_keyword' in request.form:
@@ -222,6 +254,7 @@ def view_mail(mail_id):
 
 
 @app.route('/delete_mail/<mail_id>', methods=['POST'])
+@login_required
 def delete_mail(mail_id):
     if request.method == 'POST':
         with Session(engine) as session:
@@ -234,5 +267,5 @@ if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     init_db()
-    service = gmail_authenticate()
-    app.run(host='0.0.0.0', port='8000', debug=True)
+    service = None
+    app.run(host='0.0.0.0', port='8001', debug=True)

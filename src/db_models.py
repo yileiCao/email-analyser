@@ -17,7 +17,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class User(Base):
+class Customer(Base):
     __table_args__ = {'extend_existing': True}
     __tablename__ = "users"
     id = mapped_column(Integer, primary_key=True)
@@ -27,8 +27,14 @@ class User(Base):
     # recipient = relationship("Mail", back_populates="recipient_user")
 
     def __repr__(self) -> str:
-        return f"User(id={self.id!r}, email_address={self.email_address!r}, " \
+        return f"Customer(id={self.id!r}, email_address={self.email_address!r}, " \
                f"name={self.name!r})"
+
+
+def same_as(column_name):
+    def default_function(context):
+        return context.current_parameters.get(column_name)
+    return default_function
 
 
 class Mail(Base):
@@ -39,16 +45,16 @@ class Mail(Base):
     recipient = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     time = mapped_column(DateTime, nullable=False)
     mail_server_id = mapped_column(String(50), nullable=False)
-    mail_thread_id = mapped_column(String(50), nullable=False, default=mail_server_id)
+    mail_thread_id = mapped_column(String(50), nullable=False, default=same_as('mail_server_id'))
     subject = mapped_column(String(200), nullable=True)
     keyword = mapped_column(String(200), nullable=True)
-    sender_user = relationship("User", primaryjoin=sender==User.id)
-    recipient_user = relationship("User", primaryjoin=recipient==User.id)
+    sender_user = relationship("Customer", primaryjoin=sender == Customer.id)
+    recipient_user = relationship("Customer", primaryjoin=recipient == Customer.id)
     # has_text = mapped_column(Boolean, nullable=False, default=False)
     # has_html = mapped_column(Boolean, nullable=False, default=False)
     # has_attachment = mapped_column(Boolean, nullable=False, default=False)
 
-    # user: Mapped["User"] = relationship(back_populates="sender")
+    # user: Mapped["Customer"] = relationship(back_populates="sender")
 
     def __repr__(self) -> str:
         return f"Emails(id={self.id!r}, sender={self.sender!r}, recipient={self.recipient!r}, " \
@@ -65,10 +71,10 @@ if __name__ == '__main__':
 
     from sqlalchemy.orm import Session
     with Session(engine) as session:
-        spongebob = User(
+        spongebob = Customer(
             email_address="spongebob@sqlalchemy.org",
         )
-        sandy = User(
+        sandy = Customer(
             email_address="sandy@sqlalchemy.org",
         )
         mail = Mail(
@@ -83,7 +89,7 @@ if __name__ == '__main__':
 
     from sqlalchemy import select
     session = Session(engine)
-    stmt = select(User).where(User.email_address.in_(["spongebob@sqlalchemy.org", "sandy@sqlalchemy.org"]))
+    stmt = select(Customer).where(Customer.email_address.in_(["spongebob@sqlalchemy.org", "sandy@sqlalchemy.org"]))
     for user in session.scalars(stmt):
         print(user)
     stmt = select(Mail)

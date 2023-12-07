@@ -27,10 +27,12 @@
                 <a class="nav-link" href="{{url_for('load_mails')}}">Load New Mails</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('search_mails')}}">Search Mails</a>
+                <a class="nav-link" href="{{url_for('mail_list')}}">Search Mails</a>
             </li>
             </ul>
         </div>
+          <a class="nav-link" href="{{url_for('logout')}}" id="logoutBtn">
+              <button class="btn btn-danger" onclick="return confirm('Are you sure to logout?')">Logout</button></a>
       </nav>
     <div class="container">
         {% for message in get_flashed_messages() %}
