@@ -15,10 +15,11 @@
                 </tr>
             </thead>
             <tbody>
+            <p><label><input type="checkbox" id="checkAll"/> Check all</label></p>
             {% for mail in emails %}
                 <tr>
                     <td>
-                        <input type="checkbox" id="mail{{mail['id']}}" name="mail{{mail['id']}}" value="" checked>
+                        <input type="checkbox" id="mail{{mail['id']}}" name="mail{{mail['id']}}">
                     </td>
                     <td>{{mail['sender']}}</td>
                     <td>{{mail['recipient']}}</td>
@@ -30,6 +31,11 @@
         </table>
         <button type="submit" class="btn btn-primary" name="confirm-emails">Confirm and Insert</button>
     </form>
-
-
+{% endblock %}
+{% block scripts %}
+<script>
+    $("#checkAll").change(function () {
+        $("input:checkbox").prop('checked', $(this).prop("checked"));
+    });
+</script>
 {% endblock %}
