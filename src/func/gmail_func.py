@@ -1,24 +1,18 @@
 import os
 import pickle
 from dateutil import parser
-from datetime import datetime, timezone
+from datetime import timezone
 
 # Gmail API utils
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 # for encoding/decoding messages in base64
-from base64 import urlsafe_b64decode, urlsafe_b64encode
+from base64 import urlsafe_b64decode
 # for dealing with attachement MIME types
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.image import MIMEImage
-from email.mime.audio import MIMEAudio
-from email.mime.base import MIMEBase
-from mimetypes import guess_type as guess_mime_type
 
 # If modifying these scopes, delete the file token.json.
-from src.keybert_func import extract_keyword
+from src.func.keybert_func import extract_keyword
 
 SCOPES = ['https://mail.google.com/']
 our_email = 'cyrilcao28@gmail.com'

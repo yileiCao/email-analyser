@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, aliased
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from src.db_models import Mail, Customer, Base, User
-from src.wordnet_func import get_lemmas_en, get_lemmas_jpn
+from src.func.wordnet_func import get_lemmas_en, get_lemmas_jpn
 from flask import session
 
 

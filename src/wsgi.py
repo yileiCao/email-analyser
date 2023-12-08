@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, url_for, flash, \
     redirect, escape, session
 from markupsafe import Markup
-from sqlalchemy import text, select
+from sqlalchemy import text
 from sqlalchemy.orm import Session
-from src.db_func import insert_into_tables, print_all_table, build_select_statement, delete_mail_with_id, \
+from src.func.db_func import insert_into_tables, build_select_statement, delete_mail_with_id, \
     update_mail_keyword_with_id, get_user, insert_user, change_mail_is_public_status_with_id, get_mail_owner_from_id
-from src.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, data_extract_keyword, \
+from src.func.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, data_extract_keyword, \
     get_text_from_server
 from database import db_session, init_db, engine
-from src.keybert_func import extract_keyword
+from src.func.keybert_func import extract_keyword
 from functools import wraps
 
 app = Flask(__name__)

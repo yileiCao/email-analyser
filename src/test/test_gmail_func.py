@@ -1,4 +1,4 @@
-from src.gmail_func import search_messages, gmail_authenticate
+from src.func.gmail_func import search_messages, gmail_authenticate
 
 
 def test_gmail_authenticate():

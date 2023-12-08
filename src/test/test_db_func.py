@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import create_engine, insert, select, func
 from sqlalchemy.orm import sessionmaker
 
-from src.db_func import get_user_id, insert_into_tables, print_all_table, build_select_statement
+from src.func.db_func import get_user_id, insert_into_tables, build_select_statement
 from src.db_models import Base, Customer, Mail
 
 
