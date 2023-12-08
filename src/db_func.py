@@ -74,7 +74,8 @@ def build_select_statement(filters):
     customerS = aliased(Customer, name="customerS")
     query = \
         select(customerS.name, customerS.email_address, customerR.name, customerR.email_address,
-               Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time, Mail.id, Mail.mail_thread_id) \
+               Mail.mail_server_id, Mail.subject, Mail.keyword,
+               Mail.time, Mail.id, Mail.mail_thread_id, Mail.is_public) \
             .join(customerS, Mail.sender_user).join(customerR, Mail.recipient_user) \
             .order_by(Mail.time.desc())
     query = query.where(or_(Mail.is_public == True, Mail.owner == session['id']))
@@ -105,13 +106,37 @@ def build_select_statement(filters):
 
 
 def delete_mail_with_id(db_session, mail_id):
-    db_session.query(Mail).filter(Mail.id == mail_id).delete()
-    db_session.commit()
+    mail_owner = db_session.execute(db_session.query(User.user_name).filter(User.id == Mail.owner,
+                                                                            Mail.id == mail_id)).scalar()
+    if mail_owner == session['username']:
+        db_session.query(Mail).filter(Mail.id == mail_id).delete()
+        db_session.commit()
+        return True
+    return False
+
+
+def change_mail_is_public_status_with_id(db_session, mail_id):
+    is_public = db_session.execute(db_session.query(Mail.is_public).filter(Mail.id == mail_id)).scalar()
+    mail_owner = db_session.execute(db_session.query(User.user_name).filter(User.id == Mail.owner,
+                                                                            Mail.id == mail_id)).scalar()
+    if mail_owner == session['username']:
+        db_session.query(Mail).filter(Mail.id == mail_id).update({Mail.is_public: not is_public})
+        db_session.commit()
+        return not is_public
+
+
+def get_mail_owner_from_id(db_session, mail_id):
+    return db_session.execute(db_session.query(User.user_name).filter(User.id == Mail.owner, Mail.id == mail_id)).scalar()
 
 
 def update_mail_keyword_with_id(db_session, mail_id, new_keyword):
-    db_session.query(Mail).filter(Mail.id == mail_id).update({Mail.keyword: new_keyword})
-    db_session.commit()
+    mail_owner = db_session.execute(db_session.query(User.user_name).filter(User.id == Mail.owner,
+                                                                            Mail.id == mail_id)).scalar()
+    if mail_owner == session['username']:
+        db_session.query(Mail).filter(Mail.id == mail_id).update({Mail.keyword: new_keyword})
+        db_session.commit()
+        return True
+    return False
 
 
 if __name__ == '__main__':
@@ -156,6 +181,8 @@ if __name__ == '__main__':
         # statement = statement.where(func.date(Mail.time) <= '2023-11-23')
         # statement = statement.where(Mail.keyword.like('%thank%'))
         statement = select(Mail.is_public)
+        a = db_session.execute(db_session.query(User.user_name).filter(User.id == Mail.owner, Mail.id == 1)).scalar()
         print(statement)
         rows = db_session.execute(statement).all()
         print(rows)
+        db_session.query(Mail.is_public).filter(Mail.id == 1)

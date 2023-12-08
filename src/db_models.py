@@ -64,6 +64,7 @@ class Mail(Base):
     is_public = mapped_column(Boolean, nullable=False, default=False)
     sender_user = relationship("Customer", primaryjoin=sender == Customer.id)
     recipient_user = relationship("Customer", primaryjoin=recipient == Customer.id)
+    mail_owner = relationship("User", primaryjoin=owner == User.id)
     # has_text = mapped_column(Boolean, nullable=False, default=False)
     # has_html = mapped_column(Boolean, nullable=False, default=False)
     # has_attachment = mapped_column(Boolean, nullable=False, default=False)

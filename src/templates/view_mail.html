@@ -24,13 +24,21 @@
         </tr>
         <tr>
             <td>Keyword</td>
-            <td colspan="4">
+            <td colspan="3">
                 {% for kw in s_kw %}
                 <a href="/mail_list/?ke={{kw}}">{{kw}}</a>;&nbsp;
                 {% endfor %}
             </td>
+            <td colspan="1">
+                {% if data['is_public'] %}
+                    public
+                {% else %}
+                    private
+                {% endif %}
+            </td>
         </tr>
     </table>
+    {% if is_owner %}
     <div id="accordion">
         <div class="card">
             <div class="card-header" id="headingOne">
@@ -40,8 +48,12 @@
                 </button>
               </h5>
             </div>
-
+            {% if kw_params %}
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+            {% else %}
             <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+            {% endif %}
+
               <div class="card-body">
                   <div>
                     <form method="post">
@@ -51,22 +63,22 @@
                             <td><label>keyword length: </label></td>
                             <td><input type="number" name="range_from" min="1" style="width: 80px;"
                                    placeholder="1" class="form-control"
-                                   value="{{ request['range_from'] }}"></td>
+                                   value="{{ kw_params['range_from'] }}"></td>
                             <td><input type="number" name="range_to" min="1" style="width: 80px;"
                                    placeholder="3" class="form-control"
-                                   value="{{ request['range_to'] }}"></td>
+                                   value="{{ kw_params['range_to'] }}"></td>
                             </tr>
                             <tr>
                             <td><label>diversity: </label></td>
                             <td><input type="number" step="0.01" name="diversity" max="1" min="0" style="width: 80px;"
                                    placeholder="0.5" class="form-control"
-                                   value="{{ request['diversity'] }}"></td>
+                                   value="{{ kw_params['diversity'] }}"></td>
                             </tr>
                             <tr>
                             <td><label>keyword number:</label></td>
                             <td><input type="number" name="number" min="1" style="width: 80px;"
                                    placeholder="5" class="form-control"
-                                   value="{{ request['number'] }}"></td>
+                                   value="{{ kw_params['number'] }}"></td>
                             </tr>
                             <tr>
                             <td><button type="submit" class="btn btn-primary" name="generate_keyword">
@@ -82,7 +94,7 @@
                         <div class="form-group">
                             <input type="text" name="new_keyword" id="new_keyword"
                                    placeholder="Subject Keyword" class="form-control"
-                                   value="{{ request['keyword'] }}">
+                                   value="{{ kw_params['keyword'] }}">
                         </div>
                         <button type="submit" class="btn btn-primary" name="edit_keyword"
                                 onclick="return confirm('Do you want to manually change the keywords?');">
@@ -93,7 +105,7 @@
             </div>
         </div>
     </div>
-
+    {% endif %}
 
     <div>
         <br>
@@ -101,12 +113,23 @@
             <pre>{{text}}</pre>
         </div>
 
-    <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
-        <input type="hidden" name="extra_submit_param" >
-        <button type="submit" name="submit_param" class="btn btn-danger"
-                onclick="return confirm('Do you want to permanently delete mail {{data['id']}}?');">
-            Delete This Mail
-        </button>
-    </form>
+        {% if is_owner %}
+            <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
+                <input type="hidden" name="extra_submit_param" >
+                <button type="submit" name="share_mail" class="btn btn-warning"
+                        onclick="return confirm('Do you want to share this mail?');">
+                    {% if data['is_public'] %}
+                        Make it Private
+                    {% else %}
+                        Share This Mail
+                    {% endif %}
+
+                </button>
+                <button type="submit" name="delete_mail" class="btn btn-danger"
+                        onclick="return confirm('Do you want to permanently delete mail {{data['id']}}?');">
+                    Delete This Mail
+                </button>
+            </form>
+        {% endif %}
     </div>
 {% endblock %}

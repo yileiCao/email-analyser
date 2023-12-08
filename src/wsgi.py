@@ -4,7 +4,7 @@ from markupsafe import Markup
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
 from src.db_func import insert_into_tables, print_all_table, build_select_statement, delete_mail_with_id, \
-    update_mail_keyword_with_id, get_user, insert_user
+    update_mail_keyword_with_id, get_user, insert_user, change_mail_is_public_status_with_id, get_mail_owner_from_id
 from src.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, data_extract_keyword, \
     get_text_from_server
 from database import db_session, init_db, engine
@@ -261,7 +261,9 @@ def view_mail(mail_id):
     query = build_select_statement(filters)
     mail = mail_search_statement(query)[0]
     mail_server_id = mail[4]  # mail_server_id
-    service = gmail_authenticate(session['username'])
+    with Session(engine) as db_session:
+        mail_owner = get_mail_owner_from_id(db_session, mail_id)
+    service = gmail_authenticate(mail_owner)
     plain_text = get_text_from_server(service, [{'mail_server_id': mail_server_id}])[0]['text']
     keywords = mail[6]
     params = {}
@@ -282,17 +284,28 @@ def view_mail(mail_id):
         for word in (keyword, keyword.upper(), keyword.capitalize()):
             plain_text = plain_text.replace(f'{word}', f'<mark style="background-color:burlywood;">{word}</mark>')
     plain_text = Markup(plain_text)
-    return render_template('view_mail.html', data=mail, text=plain_text, request=params, s_kw=s_kw)
+    is_owner = mail_owner == session['username']
+    return render_template('view_mail.html', data=mail, text=plain_text, kw_params=params, s_kw=s_kw, is_owner=is_owner)
 
 
 @app.route('/delete_mail/<mail_id>', methods=['POST'])
 @login_required
 def delete_mail(mail_id):
     if request.method == 'POST':
-        with Session(engine) as db_session:
-            delete_mail_with_id(db_session, mail_id)
-            flash(f'Mail {mail_id} successfully removed', 'success')
-        return redirect(url_for('mail_list'))
+        if 'delete_mail' in request.form:
+            with Session(engine) as db_session:
+                if delete_mail_with_id(db_session, mail_id):
+                    flash(f'Mail {mail_id} successfully removed', 'success')
+            return redirect(url_for('mail_list'))
+        elif 'share_mail' in request.form:
+            with Session(engine) as db_session:
+                is_public = change_mail_is_public_status_with_id(db_session, mail_id)
+                if is_public is not None:
+                    if is_public:
+                        flash(f'Successfully share Mail {mail_id}', 'success')
+                    else:
+                        flash(f'Successfully make Mail {mail_id} private', 'success')
+            return redirect(url_for('view_mail', mail_id=mail_id))
 
 
 if __name__ == '__main__':
