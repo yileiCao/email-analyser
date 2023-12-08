@@ -117,7 +117,7 @@
             <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
                 <input type="hidden" name="extra_submit_param" >
                 <button type="submit" name="share_mail" class="btn btn-warning"
-                        onclick="return confirm('Do you want to share this mail?');">
+                        onclick="return confirm('Do you want to change the sharing status of this mail?');">
                     {% if data['is_public'] %}
                         Make it Private
                     {% else %}

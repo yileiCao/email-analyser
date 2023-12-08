@@ -259,7 +259,11 @@ def view_mail(mail_id):
     mail_id = int(mail_id)
     filters = {'id': mail_id}
     query = build_select_statement(filters)
-    mail = mail_search_statement(query)[0]
+    mail = mail_search_statement(query)
+    if not mail:
+        flash("You don't have access to this mail!", 'danger')
+        return redirect(url_for('mail_list'))
+    mail = mail[0]
     mail_server_id = mail[4]  # mail_server_id
     with Session(engine) as db_session:
         mail_owner = get_mail_owner_from_id(db_session, mail_id)
