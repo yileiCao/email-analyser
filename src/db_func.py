@@ -150,39 +150,11 @@ if __name__ == '__main__':
          'keyword': ' Yilei, add Pankaj Gawande - Solution Architect - SAP BRIM at Acuiti Labs',
          'recipient': 'Yilei Cao <cyrilcao28@gmail.com>',
          'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')}]
-    engine = create_engine("sqlite:////Users/yileicao/Documents/email-extraction/email.db", echo=True)
+    engine = create_engine("email.db", echo=True)
     Base.metadata.create_all(engine)
     with Session(engine) as db_session:
-        # insert_into_tables(db_session, data)
-        # print_all_table(db_session)
-
-        # mails = db_session.execute(text("select * from mails")).all()
-        # print(mails)
-
-        # sql_text = '''
-        # SELECT su.name sender_name, su.email_address sender_email_address,
-        #     ru.name recipient_name, ru.email_address recipient_email_address,
-        #     m.mail_server_id, m.subject, m.keyword, m.time
-        # FROM mails m
-        # JOIN users su
-        # ON m.sender = su.id
-        # JOIN users ru
-        # ON m.recipient = ru.id
-        # '''
-        # mails = db_session.execute(text(sql_text)).all()
-        # print(mails)
-
-        # userR = aliased(Customer, name="userR")
-        # userS = aliased(Customer, name="userS")
-        # statement = \
-        #     select(userS.name, userS.email_address, userR.name, userR.email_address,
-        #            Mail.mail_server_id, Mail.subject, Mail.keyword, Mail.time)\
-        #     .join(userS, Mail.sender_user).join(userR, Mail.recipient_user)
-        # statement = statement.where(userS.email_address == 'cyrilcao28@gmail.com')
-        # statement = statement.where(userS.name == 'yilei CAO')
-        # statement = statement.where(func.date(Mail.time) <= '2023-11-23')
-        # statement = statement.where(Mail.keyword.like('%thank%'))
-        statement = select(Mail.is_public)
+        mail_owner = get_mail_owner_from_id(db_session, 1)
+        statement = select(Mail)
         a = db_session.execute(db_session.query(User.user_name).filter(User.id == Mail.owner, Mail.id == 1)).scalar()
         print(statement)
         rows = db_session.execute(statement).all()

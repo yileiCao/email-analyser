@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, scoped_session, sessionmaker, declarative_ba
 
 
 # engine = create_engine("sqlite://", echo=True)
-engine = create_engine("sqlite:////Users/yileicao/Documents/email-extraction/email.db", echo=True)
+engine = create_engine("sqlite:///email.db", echo=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))

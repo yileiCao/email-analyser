@@ -29,8 +29,8 @@ def gmail_authenticate(username):
     creds = None
     # the file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first time
-    if os.path.exists(f"/Users/yileicao/Documents/email-extraction/src/{username}.pickle"):
-        with open(f"/Users/yileicao/Documents/email-extraction/src/{username}.pickle", "rb") as token:
+    if os.path.exists(f"credentials/{username}.pickle"):
+        with open(f"credentials/{username}.pickle", "rb") as token:
             creds = pickle.load(token)
     # if there are no (valid) credentials availablle, let the user log in.
     if not creds or not creds.valid:
@@ -38,10 +38,10 @@ def gmail_authenticate(username):
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                f'/Users/yileicao/Documents/email-extraction/src/{username}_credentials.json', SCOPES)
+                f'credentials/{username}_credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # save the credentials for the next run
-        with open(f"/Users/yileicao/Documents/email-extraction/src/{username}.pickle", "wb") as token:
+        with open(f"credentials/{username}.pickle", "wb") as token:
             pickle.dump(creds, token)
     return build('gmail', 'v1', credentials=creds)
 
@@ -142,12 +142,6 @@ def data_extract_keyword(data):
 
 
 if __name__ == '__main__':
-    # get the Gmail API service
-    service = gmail_authenticate()
-    # results = [{'id': '18bccbd2b9cc9308'}]
+    if os.path.exists(f"credentials/test.pickle"):
+        print('1')
 
-    # # get emails that match the query you specify
-    results = search_messages(service, "RUTILEA") # only html: [{'id':'18be543e920c0596'}]
-    # print(f"Found {len(results)} results.")
-    # # for each email matched, read it (output plain/text to console & save HTML and attachments)
-    generate_metadata_from_msgs(service, results)
