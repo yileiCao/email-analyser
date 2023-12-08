@@ -110,7 +110,9 @@
           {orderable: false}],
       });
     });
-
+    {% if request %}
+        window.location = '#myTable';
+    {% endif %}
 
   </script>
 {% endblock %}
