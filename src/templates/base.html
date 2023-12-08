@@ -31,8 +31,8 @@
             </li>
             </ul>
         </div>
-          <a class="nav-link disabled" aria-disabled="true">Hello {{ session.username }}</a>
           {% if session.username %}
+          <a class="nav-link disabled" aria-disabled="true">Hello {{ session.username }}</a>
           <a class="nav-link" href="{{url_for('logout')}}" id="logoutBtn">
               <button class="btn btn-danger" onclick="return confirm('Are you sure to logout?')">Logout</button></a>
           {% endif %}
