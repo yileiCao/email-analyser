@@ -31,58 +31,75 @@
             </td>
         </tr>
     </table>
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                  Unsatisfied with Keywords?
+                </button>
+              </h5>
+            </div>
 
-    <div>
-    <form method="post">
-        <h4>Generate keywords with different parameters.</h4>
-        <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-            <td><label>keyword length: </label></td>
-            <td><input type="number" name="range_from" min="1" style="width: 80px;"
-                   placeholder="1" class="form-control"
-                   value="{{ request['range_from'] }}"></td>
-            <td><input type="number" name="range_to" min="1" style="width: 80px;"
-                   placeholder="3" class="form-control"
-                   value="{{ request['range_to'] }}"></td>
-            </tr>
-            <tr>
-            <td><label>diversity: </label></td>
-            <td><input type="number" step="0.01" name="diversity" max="1" min="0" style="width: 80px;"
-                   placeholder="0.5" class="form-control"
-                   value="{{ request['diversity'] }}"></td>
-            </tr>
-            <tr>
-            <td><label>keyword number:</label></td>
-            <td><input type="number" name="number" min="1" style="width: 80px;"
-                   placeholder="5" class="form-control"
-                   value="{{ request['number'] }}"></td>
-            </tr>
-            <tr>
-            <td><button type="submit" class="btn btn-primary" name="generate_keyword">
-                Generate Keywords</button></td>
-            </tr>
-        </table>
-    </form>
-    <br>
-    </div>
-
-    <div>
-    <form method="post">
-        <h4>Manually edit keywords</h4>
-        <div class="form-group">
-            <input type="text" name="new_keyword" id="new_keyword"
-                   placeholder="Subject Keyword" class="form-control"
-                   value="{{ request['keyword'] }}">
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+              <div class="card-body">
+                  <div>
+                    <form method="post">
+                        <h4>Generate keywords with different parameters.</h4>
+                        <table cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                            <td><label>keyword length: </label></td>
+                            <td><input type="number" name="range_from" min="1" style="width: 80px;"
+                                   placeholder="1" class="form-control"
+                                   value="{{ request['range_from'] }}"></td>
+                            <td><input type="number" name="range_to" min="1" style="width: 80px;"
+                                   placeholder="3" class="form-control"
+                                   value="{{ request['range_to'] }}"></td>
+                            </tr>
+                            <tr>
+                            <td><label>diversity: </label></td>
+                            <td><input type="number" step="0.01" name="diversity" max="1" min="0" style="width: 80px;"
+                                   placeholder="0.5" class="form-control"
+                                   value="{{ request['diversity'] }}"></td>
+                            </tr>
+                            <tr>
+                            <td><label>keyword number:</label></td>
+                            <td><input type="number" name="number" min="1" style="width: 80px;"
+                                   placeholder="5" class="form-control"
+                                   value="{{ request['number'] }}"></td>
+                            </tr>
+                            <tr>
+                            <td><button type="submit" class="btn btn-primary" name="generate_keyword">
+                                Generate Keywords</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                    <br>
+                    </div>
+                  <div>
+                    <form method="post">
+                        <h4>Manually edit keywords</h4>
+                        <div class="form-group">
+                            <input type="text" name="new_keyword" id="new_keyword"
+                                   placeholder="Subject Keyword" class="form-control"
+                                   value="{{ request['keyword'] }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary" name="edit_keyword"
+                                onclick="return confirm('Do you want to manually change the keywords?');">
+                            Update</button>
+                    </form>
+                  </div>
+              </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary" name="edit_keyword"
-                onclick="return confirm('Do you want to manually change the keywords?');">
-            Update</button>
-    </form>
-    <br>
     </div>
 
+
     <div>
-    <pre>{{text}}</pre>
+        <br>
+        <div style="background:rgb(255, 255, 220);;">
+            <pre>{{text}}</pre>
+        </div>
 
     <form method="post" action="{{ url_for('delete_mail', mail_id=data['id']) }}" class="inline">
         <input type="hidden" name="extra_submit_param" >
