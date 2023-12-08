@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from sqlalchemy import insert, create_engine, select, text, func, or_
+from sqlalchemy import insert, create_engine, select, func, or_
 from sqlalchemy.orm import Session, aliased
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from src.db_models import Mail, Customer, Base, User
 from src.wordnet_func import get_lemmas_en, get_lemmas_jpn
@@ -9,8 +10,11 @@ from flask import session
 
 
 def get_user(db_session, username, password):
-    return db_session.execute(select(User.id, User.user_name).where(
-        User.user_name == username, User.password == password)).first()
+    user_record = db_session.execute(select(User.id, User.user_name, User.password).where(
+        User.user_name == username)).first()
+    if user_record and check_password_hash(user_record.password, password):
+        return user_record
+    return None
 
 
 def insert_user(db_session, username, password):
@@ -18,7 +22,7 @@ def insert_user(db_session, username, password):
             User.user_name == username)).first():
         return False
     else:
-        db_session.execute(insert(User).values(user_name=username, password=password))
+        db_session.execute(insert(User).values(user_name=username, password=generate_password_hash(password)))
         db_session.commit()
         return True
 
@@ -29,9 +33,7 @@ def insert_into_tables(db_session, mail_data):
         mail_info['sender'] = get_user_id(db_session, mail_info['sender'])
         mail_info['recipient'] = get_user_id(db_session, mail_info['recipient'])
         mail_info['owner'] = session['id']
-        # print(mail_info)
     if mail_data:
-        # session.execute(insert(Mail), mail_data)
         for mail in mail_data:
             if db_session.execute(select(Mail.id).where(
                     Mail.mail_server_id == mail['mail_server_id'])).all():

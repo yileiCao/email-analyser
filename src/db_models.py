@@ -1,16 +1,9 @@
 from datetime import datetime
-from typing import List
-from typing import Optional
 from sqlalchemy import ForeignKey, Integer, DateTime, Boolean
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-# from src.database import Base
-
-##TODO
-## relationship
 
 
 class Base(DeclarativeBase):
@@ -22,7 +15,7 @@ class User(Base):
     __tablename__ = "users"
     id = mapped_column(Integer, primary_key=True)
     user_name = mapped_column(String(50), nullable=True, unique=True)
-    password = mapped_column(String(50), nullable=True)
+    password = mapped_column(String(128), nullable=True)
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, user_name={self.user_name!r}, " \
@@ -35,8 +28,6 @@ class Customer(Base):
     id = mapped_column(Integer, primary_key=True)
     email_address = mapped_column(String(50), nullable=False)
     name = mapped_column(String(50), nullable=True)
-    # sender = relationship("Mail", back_populates="sender_user")
-    # recipient = relationship("Mail", back_populates="recipient_user")
 
     def __repr__(self) -> str:
         return f"Customer(id={self.id!r}, email_address={self.email_address!r}, " \
@@ -65,48 +56,9 @@ class Mail(Base):
     sender_user = relationship("Customer", primaryjoin=sender == Customer.id)
     recipient_user = relationship("Customer", primaryjoin=recipient == Customer.id)
     mail_owner = relationship("User", primaryjoin=owner == User.id)
-    # has_text = mapped_column(Boolean, nullable=False, default=False)
-    # has_html = mapped_column(Boolean, nullable=False, default=False)
-    # has_attachment = mapped_column(Boolean, nullable=False, default=False)
-
-    # user: Mapped["Customer"] = relationship(back_populates="sender")
 
     def __repr__(self) -> str:
         return f"Emails(id={self.id!r}, sender={self.sender!r}, recipient={self.recipient!r}, " \
                f"time={self.time!r}, server_id={self.mail_server_id!r}, keyword={self.keyword!r})"
 
 
-if __name__ == '__main__':
-
-    from sqlalchemy import create_engine
-
-    engine = create_engine("sqlite://", echo=True)
-    # engine = create_engine("sqlite:////Users/yileicao/Documents/email-extraction/email.db", echo=True)
-    Base.metadata.create_all(engine)
-
-    from sqlalchemy.orm import Session
-    with Session(engine) as session:
-        spongebob = Customer(
-            email_address="spongebob@sqlalchemy.org",
-        )
-        sandy = Customer(
-            email_address="sandy@sqlalchemy.org",
-        )
-        mail = Mail(
-            sender='spongebob',
-            recipient=1,
-            time=datetime.now(),
-            mail_server_id="aa",
-            keyword="aa"
-        )
-        session.add_all([spongebob, sandy, mail])
-        session.commit()
-
-    from sqlalchemy import select
-    session = Session(engine)
-    stmt = select(Customer).where(Customer.email_address.in_(["spongebob@sqlalchemy.org", "sandy@sqlalchemy.org"]))
-    for user in session.scalars(stmt):
-        print(user)
-    stmt = select(Mail)
-    for mail in session.scalars(stmt):
-        print(mail)
