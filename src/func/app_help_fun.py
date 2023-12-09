@@ -79,7 +79,7 @@ def keyword_generation_params(request, plain_text):
 
 
 def highlight_keyword_in_text(plain_text, keywords):
-    for keyword in keywords.replace(',', ' ').split():
+    for keyword in set(keywords.replace(',', ' ').split()):
         keyword = keyword.strip()
         for word in (keyword, keyword.upper(), keyword.capitalize()):
             plain_text = plain_text.replace(f'{word}', f'<mark style="background-color:burlywood;">{word}</mark>')
