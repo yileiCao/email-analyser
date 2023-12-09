@@ -1,10 +1,9 @@
-from datetime import datetime
 
-from sqlalchemy import insert, create_engine, select, func, or_
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy import insert, select, func, or_
+from sqlalchemy.orm import aliased
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from src.db_models import Mail, Customer, Base, User
+from src.db_models import Mail, Customer, User
 from src.func.wordnet_func import get_lemmas_en, get_lemmas_jpn
 from flask import session
 
@@ -140,23 +139,3 @@ def update_mail_keyword_with_id(db_session, mail_id, new_keyword):
         return True
     return False
 
-
-if __name__ == '__main__':
-    data = [
-        {'mail_server_id': '18bfd1199e673cc7', 'sender': '"LEGO® Shop" <Noreply@t.crm.lego.com>',
-         'recipient': '<cyrilcao28@gmail.com>', 'keyword': '受付完了！ 行健様のご注文が確定しました。',
-         'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')},
-        {'mail_server_id': '18bf1a0b42cfce45', 'sender': 'LinkedIn <messages-noreply@linkedin.com>',
-         'keyword': ' Yilei, add Pankaj Gawande - Solution Architect - SAP BRIM at Acuiti Labs',
-         'recipient': 'Yilei Cao <cyrilcao28@gmail.com>',
-         'time': datetime.strptime('Thu, 23 Nov 2023 10:44:27 -0600', '%a, %d %b %Y %H:%M:%S %z')}]
-    engine = create_engine("email.db", echo=True)
-    Base.metadata.create_all(engine)
-    with Session(engine) as db_session:
-        mail_owner = get_mail_owner_from_id(db_session, 1)
-        statement = select(Mail)
-        a = db_session.execute(db_session.query(User.user_name).filter(User.id == Mail.owner, Mail.id == 1)).scalar()
-        print(statement)
-        rows = db_session.execute(statement).all()
-        print(rows)
-        db_session.query(Mail.is_public).filter(Mail.id == 1)

@@ -7,19 +7,15 @@ from datetime import timezone
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-# for encoding/decoding messages in base64
 from base64 import urlsafe_b64decode
-# for dealing with attachement MIME types
 
 # If modifying these scopes, delete the file token.json.
 from src.func.keybert_func import extract_keyword
 
 SCOPES = ['https://mail.google.com/']
-our_email = 'cyrilcao28@gmail.com'
 
 
 def gmail_authenticate(username):
-    ## TODO  personalized token
     creds = None
     # the file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first time
@@ -134,8 +130,4 @@ def data_extract_keyword(data):
             key_word = extract_keyword(text)
             mail['keyword'] = ', '.join([i[0] for i in key_word])
 
-
-if __name__ == '__main__':
-    if os.path.exists(f"credentials/test.pickle"):
-        print('1')
 

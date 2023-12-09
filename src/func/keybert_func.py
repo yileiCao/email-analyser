@@ -7,6 +7,3 @@ def extract_keyword(text, kw_len_fr=1, kw_len_to=3, diversity=0.5, kw_num=5):
                                          use_mmr=True, diversity=diversity, top_n=kw_num)
     return keywords
 
-
-if __name__ == '__main__':
-    pass
