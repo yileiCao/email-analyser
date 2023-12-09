@@ -20,7 +20,7 @@
         <br><br>
     </div>
 
-    <h6>Want to know more about supported features? Click <a>Here</a>.</h6>
+    <h6>Want to know more about supported features? Click <a href="{{url_for('about')}}">Here</a>.</h6>
     {% if not session['username'] %}
         <form action={{url_for('login')}}>
         <input type="submit" class="btn btn-primary" value="Login Here" />

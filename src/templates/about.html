@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Welcome to the Introduction Page</h1>
+        <div>
+        <h4>Before connecting to your Gmail account</h4>
+            <ul>
+                <li>Prepare your Gmail credentials by following the instructions at <a href="https://developers.google.com/gmail/api/quickstart/go">Google Developers</a>.</li>
+                <li>Rename the credential JSON file to <code>{{your_username}}_credentials.json</code> and upload it to the system.</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Load New Mails Page</h3>
+            <ul>
+                <li>You can search for and load emails from your Gmail account.</li>
+                <li>In addition to the commonly used fields provided on that page, you can add any tag supported by the Gmail API in the filter text column.</li>
+                <li>After clicking the 'Search' button, the page will display all matching emails, showing 10 emails at a time. This allows you to select which emails should be added to the database.</li>
+                <li>The database will automatically ignore duplicate emails.</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Search Mails Page</h3>
+            <ul>
+                <li>You can access all emails owned by you, as well as emails shared by other users.</li>
+                <li>The search system supports semantic keyword search, allowing you to search for keywords with similar meanings. Semantic search only support searching with one keyword.</li>
+                <li>After clicking the 'Include Japanese' tag, the result set will also include keywords with similar meanings in Japanese.</li>
+            </ul>
+        </div>
+        <div>
+            <h3>View Mail Page</h3>
+            <ul>
+                <li>From search mails page, you will be directed to the view mail page by clicking the 'ID' at the beginning of each mail row.</li>
+                <li>By clicking on links in the email information table, the page will redirect to the 'Search Mails' page with that constraint.</li>
+                <li>You can play around with the keywords generation with different parameters or manually update keywords.</li>
+                <li>You can also change the sharing status of the email or delete the email from the database.</li>
+            </ul>
+        </div>
+
+{% endblock %}
