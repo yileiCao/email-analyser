@@ -174,7 +174,7 @@ def view_mail(mail_id):
     params = {}
     if request.method == 'POST' and 'generate_keyword' in request.form:
         params = keyword_generation_params(request, plain_text)
-    split_kw = keywords.replace(',', ' ').split()
+    split_kw = keywords.replace(',', ' ').replace(';', ' ').split()
     plain_text = plain_text.replace('<', '').replace('>', '')
     highlighted_text = highlight_keyword_in_text(plain_text, keywords)
     is_owner = mail_owner == session['username']

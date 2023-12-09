@@ -46,7 +46,7 @@
                    value="{{ request['be'] }}">
         </div>
 
-        <div class="col-9">
+        <div class="col-6">
             <label for="keyword" class="form-label">Keyword</label>
             <input type="text" name="keyword" id="keyword"
                    placeholder="Keyword" class="form-control"
@@ -61,6 +61,15 @@
                 <input type="checkbox" id="is_kw_jpn" name="is_kw_jpn" value="Tr">
                 <label for="is_kw_jpn" class="form-check-label"> Include Japanese </label>
             </div>
+        </div>
+
+        <div class="col-3">
+            <input type="radio" id="own" name="mail_status" value="own">
+            <label for="own">Owned mails</label><br>
+            <input type="radio" id="share" name="mail_status" value="share">
+            <label for="share">Shared by other users</label><br>
+            <input type="radio" id="all" name="mail_status" value="all" checked="checked">
+            <label for="all">All mails</label>
         </div>
 
         <div class="col-12">

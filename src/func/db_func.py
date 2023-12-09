@@ -1,5 +1,5 @@
 
-from sqlalchemy import insert, select, func, or_
+from sqlalchemy import insert, select, func, or_, and_
 from sqlalchemy.orm import aliased
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -79,7 +79,6 @@ def build_select_statement(filters):
                Mail.time, Mail.id, Mail.mail_thread_id, Mail.is_public) \
             .join(customerS, Mail.sender_user).join(customerR, Mail.recipient_user) \
             .order_by(Mail.time.desc())
-    query = query.where(or_(Mail.is_public == True, Mail.owner == session['id']))
     if filters.get("fr"):  # sender email_address
         query = query.where(customerS.email_address == filters["fr"])
     if filters.get("to"):  # recipient email_address
@@ -103,6 +102,14 @@ def build_select_statement(filters):
         query = query.where(Mail.id == filters['id'])
     if filters.get('et'):  # email_thread
         query = query.where(Mail.mail_thread_id == filters['et'])
+
+    mail_status = filters.get('st', 'all')
+    if mail_status == 'own':
+        query = query.where(Mail.owner == session['id'])
+    elif mail_status == 'share':
+        query = query.where(and_(Mail.is_public == True, Mail.owner != session['id']))
+    else:  # mail_status == 'all
+        query = query.where(or_(Mail.is_public == True, Mail.owner == session['id']))
     return query
 
 

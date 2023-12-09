@@ -42,6 +42,7 @@ def build_mail_list_query(request):
     is_kw_jpn = request.form.get('is_kw_jpn')
     email_thread = request.form.get('email_thread')
     email_subject = request.form.get('email_subject')
+    email_status = request.form.get('mail_status')
     query = "?"
     if email_from:
         query += f"fr={email_from}&"
@@ -61,6 +62,8 @@ def build_mail_list_query(request):
         query += f"et={email_thread}&"
     if email_subject:
         query += f"sbj={email_subject}&"
+    if email_status:
+        query += f"st={email_status}&"
     query = query[:-1]
     return query
 
