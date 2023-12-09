@@ -1,0 +1,11 @@
+Flask==2.2.2
+google_api_python_client==2.108.0
+google_auth_oauthlib==0.5.2
+keybert==0.8.3
+MarkupSafe==2.1.1
+nltk==3.8.1
+protobuf==3.20.3
+pytest==7.4.0
+python_dateutil==2.8.2
+SQLAlchemy==2.0.21
+Werkzeug==2.2.3

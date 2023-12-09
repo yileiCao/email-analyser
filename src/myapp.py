@@ -7,7 +7,7 @@ from src.func.db_func import insert_into_tables, build_select_statement, delete_
     update_mail_keyword_with_id, get_user, insert_user, change_mail_is_public_status_with_id, get_mail_owner_from_id
 from src.func.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, \
     data_extract_keyword, get_text_from_server
-from database import engine
+from src.database import engine
 from functools import wraps
 
 app = Flask(__name__)
