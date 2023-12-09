@@ -10,6 +10,7 @@ class Config(object):
     SESSION_TYPE = 'filesystem'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=5)
     SESSION_FILE_THRESHOLD = 100
+    PROPAGATE_EXCEPTIONS = True
 
 
 class DbConfig(object):

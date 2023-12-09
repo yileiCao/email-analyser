@@ -205,3 +205,20 @@ def delete_mail(mail_id):
                         flash(f'Successfully make Mail {mail_id} private', 'success')
             return redirect(url_for('view_mail', mail_id=mail_id))
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html', e=e), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('500.html', e=e), 500
+
+
+@app.errorhandler(Exception)
+def internal_server_error(e):
+    return render_template('error.html', e=e)
+
