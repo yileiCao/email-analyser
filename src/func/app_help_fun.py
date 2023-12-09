@@ -67,9 +67,9 @@ def build_mail_list_query(request):
 
 def keyword_generation_params(request, plain_text):
     kw_len_fr = request.form['range_from'] or 1
-    kw_len_to = request.form['range_to'] or 3
+    kw_len_to = request.form['range_to'] or 1
     diversity = request.form['diversity'] or 0.5
-    kw_num = request.form['number'] or 5
+    kw_num = request.form['number'] or 10
     key_word = extract_keyword(plain_text, kw_len_fr=int(kw_len_fr), kw_len_to=int(kw_len_to),
                                diversity=float(diversity), kw_num=int(kw_num))
     keywords = ', '.join([i[0] for i in key_word])
