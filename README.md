@@ -5,7 +5,7 @@ A web application help manage email database for the company
 
 ## Features
 
-- Easily connected with your Gmail account
+- Easily connect with your Gmail account
 - Automatically generate keywords for each mail loaded to the database
 - Enable semantically search related mails by keywords
 - Support multiple users to interact with the app at the same time, enable mail sharing
