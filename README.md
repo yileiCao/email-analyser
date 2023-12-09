@@ -42,6 +42,9 @@ A web application helps manage the email database for the company
 - Visit 127.0.0.1:8001 on your web browser to play around.
 
 ## Application preview
+### Login page
+![login_page](https://github.com/yileiCao/email-extraction/assets/63228731/ef99ffda-c98b-4f8f-8d28-b6bb0962ee64)
+
 ### Load mail page
 ![load_mails](https://github.com/yileiCao/email-extraction/assets/63228731/87412f74-a1b6-4a58-bbf6-03337336a197)
 
