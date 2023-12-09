@@ -25,6 +25,12 @@
         <form action={{url_for('login')}}>
         <input type="submit" class="btn btn-primary" value="Login Here" />
         </form>
+    {% else %}
+        <br>
+        <form method=post enctype=multipart/form-data>
+            <input type=file name=file>
+            <input type=submit class="btn btn-primary" value='Upload Credential Files'>
+        </form>
     {% endif %}
 
 {% endblock %}

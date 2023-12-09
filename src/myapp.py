@@ -1,8 +1,10 @@
+import os
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from sqlalchemy.orm import Session
+from werkzeug.utils import secure_filename
 
 from src.func.app_help_fun import build_raw_mail_list_encoded_query, mail_search_statement, build_mail_list_query, \
-    keyword_generation_params, highlight_keyword_in_text
+    keyword_generation_params, highlight_keyword_in_text, update_credential_file
 from src.func.db_func import insert_into_tables, build_select_statement, delete_mail_with_id, \
     update_mail_keyword_with_id, get_user, insert_user, change_mail_is_public_status_with_id, get_mail_owner_from_id
 from src.func.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, \
@@ -25,8 +27,15 @@ def login_required(f):
     return wrap
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
+    if request.method == 'POST':
+        flash_text, flash_type = update_credential_file(request)
+        if flash_type == 'info':  # pass file name check
+            file = request.files['file']
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        flash(flash_text, flash_type)
     return render_template('home.html')
 
 
@@ -50,7 +59,7 @@ def login():
             session['id'] = account.id
             session['username'] = account.user_name
             flash('Logged in successfully !', 'success')
-            return redirect(url_for('mail_list'))
+            return redirect(url_for('home'))
         else:
             flash('Incorrect username / password !', 'danger')
     return render_template('login.html')

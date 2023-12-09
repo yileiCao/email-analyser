@@ -1,3 +1,4 @@
+from flask import session
 from markupsafe import Markup
 
 from src.func.keybert_func import extract_keyword
@@ -89,3 +90,15 @@ def highlight_keyword_in_text(plain_text, keywords):
     return Markup(plain_text)
 
 
+def update_credential_file(request):
+    if 'file' not in request.files:
+        return 'No file part', 'warning'
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file', 'warning'
+    elif file and not file.filename.endswith('.json'):
+        return 'Wrong file type', 'warning'
+    elif file.filename != f"{session['username']}_credentials.json":
+        return 'Wrong file name', 'warning'
+    else:
+        return 'Successfully uploaded', 'info'

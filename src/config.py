@@ -11,6 +11,7 @@ class Config(object):
     PERMANENT_SESSION_LIFETIME = timedelta(hours=5)
     SESSION_FILE_THRESHOLD = 100
     PROPAGATE_EXCEPTIONS = True
+    UPLOAD_FOLDER = 'src/credentials'
 
 
 class DbConfig(object):
