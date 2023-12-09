@@ -22,7 +22,7 @@ def gmail_authenticate(username):
     if os.path.exists(f"src/credentials/{username}.pickle"):
         with open(f"src/credentials/{username}.pickle", "rb") as token:
             creds = pickle.load(token)
-    # if there are no (valid) credentials availablle, let the user log in.
+    # if there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -116,7 +116,7 @@ def get_text_from_server(service, inserted_data):
         text = find_content(payload, "text/plain")
         if text:
             text = parse_body(text, "text/plain")
-            ##  TODO: Is there any better sulution?
+            #  TODO: Is there any better solution?
             text = text.split('\n> ')[0]  # try removing duplicated earlier emails
         row['text'] = text
     return inserted_data
@@ -129,5 +129,3 @@ def data_extract_keyword(data):
         if text:
             key_word = extract_keyword(text)
             mail['keyword'] = ', '.join([i[0] for i in key_word])
-
-

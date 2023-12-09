@@ -66,7 +66,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/register', methods =['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST' \
             and 'username' in request.form and 'password' in request.form \
@@ -129,7 +129,8 @@ def raw_mail_list(encoded_query, page_num):
             with Session(engine) as db_session:
                 num_succeed = insert_into_tables(db_session, inserted_data)
                 num_failed = len(inserted_data) - num_succeed
-                flash(f"You've successfully added {num_succeed} new mails! {num_failed} mails already in DB.", 'success')
+                flash(f"You've successfully added {num_succeed} new mails! "
+                      f"{num_failed} mails already in DB.", 'success')
                 # info, error, warning
                 if is_end:
                     return redirect(url_for('load_mails'))
@@ -183,7 +184,8 @@ def view_mail(mail_id):
     plain_text = plain_text.replace('<', '').replace('>', '')
     highlighted_text = highlight_keyword_in_text(plain_text, keywords)
     is_owner = mail_owner == session['username']
-    return render_template('view_mail.html', data=mail, text=highlighted_text, kw_params=params, s_kw=split_kw, is_owner=is_owner)
+    return render_template('view_mail.html', data=mail, text=highlighted_text,
+                           kw_params=params, s_kw=split_kw, is_owner=is_owner)
 
 
 @app.route('/delete_mail/<mail_id>', methods=['POST'])
@@ -221,4 +223,3 @@ def internal_server_error(e):
 @app.errorhandler(Exception)
 def internal_server_error(e):
     return render_template('error.html', e=e)
-
