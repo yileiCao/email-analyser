@@ -28,7 +28,8 @@ A web application helps manage the email database for the company
 
   <code>nltk.download('omw-1.4')</code> to support Japanese vocabulary set
 
-- Get your Gmail credentials.json, put it in src/credentials folder, and rename it with {{preferred_username}}_credentials.json
+- Get your Gmail credentials.json, and rename it with {{preferred_username}}_credentials.json.
+  It should be uploaded after login.
   
   A test json is provided, test it by signing up a user with username=test.
   
@@ -36,7 +37,7 @@ A web application helps manage the email database for the company
 
 - Run this command to start the app:
   
-  python run.py 
+  <code>python run.py</code>
 
 - Visit 127.0.0.1:8001 on your web browser to play around.
 
