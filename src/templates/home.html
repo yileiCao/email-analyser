@@ -1,6 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Welcome to EmailAnalyser {% endblock %}</h1>
+    <div>
+        <br><br>
+        <h1>{% block title %} Welcome to EmailAnalyser {% endblock %}</h1>
+        A web application helps manage the email database for the company
+        <br><br>
+    </div>
+
+    <div style="width:800px; margin:0;">
+        <h2>Features</h2>
+        <ul class="list-group">
+            <li class="list-group-item">Easily connect with your Gmail account</li>
+            <li class="list-group-item">Automatically generate keywords for each mail loaded to the database</li>
+            <li class="list-group-item">Enable semantically search related emails by keywords</li>
+            <li class="list-group-item">Support multiple users to interact with the app at the same time, enable mail sharing</li>
+            <li class="list-group-item">Can be easily integrated into the CRM system</li>
+        </ul>
+        <br><br>
+    </div>
+
+    <h6>Want to know more about supported features? Click <a>Here</a>.</h6>
+    {% if not session['username'] %}
+        <form action={{url_for('login')}}>
+        <input type="submit" class="btn btn-primary" value="Login Here" />
+        </form>
+    {% endif %}
 
 {% endblock %}

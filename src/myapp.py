@@ -27,13 +27,14 @@ def login_required(f):
 
 @app.route('/', methods=['GET'])
 def home():
-    if session.get('logged_in') is None:
-        return redirect(url_for('login'))
     return render_template('home.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if session.get('username') is not None:
+        flash('You have already logged in.', 'info')
+        return redirect(url_for('mail_list'))
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
