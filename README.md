@@ -1,15 +1,15 @@
 
-# Email-extraction
+# Email Analyser
 
-A web application helps manage the email database for the company
+This web application aids in managing a company’s email database effectively.
 
 ## Features
 
-- Easily connect with your Gmail account
-- Automatically generate keywords for each mail loaded to the database
-- Enable semantically search related emails by keywords
-- Support multiple users to interact with the app at the same time, enable mail sharing
-- Can be easily integrated into the CRM system
+- Seamless integration with your Gmail account.
+- Automatic keyword generation for each email added to the database.
+- Semantic search functionality for finding related emails using keywords.
+- Multi-user support, allowing simultaneous interaction with the app and facilitating email sharing.
+- Easy integration with existing CRM systems.
 
 ## Preparing
 
