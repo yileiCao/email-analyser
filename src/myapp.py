@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from werkzeug.utils import secure_filename
 
 from src.func.app_help_fun import build_raw_mail_list_encoded_query, mail_search_statement, build_mail_list_query, \
-    keyword_generation_params, highlight_keyword_in_text, update_credential_file
+    keyword_generation_from_params, highlight_keyword_in_text, update_credential_file
 from src.func.db_func import insert_into_tables, build_select_statement, delete_mail_with_id, \
     update_mail_keyword_with_id, get_user, insert_user, change_mail_is_public_status_with_id, get_mail_owner_from_id
 from src.func.gmail_func import gmail_authenticate, search_messages, generate_metadata_from_msgs, \
@@ -163,14 +163,13 @@ def mail_list():
 @app.route('/view_mail/<mail_id>', methods=('GET', 'POST'))
 @login_required
 def view_mail(mail_id):
-    if request.method == 'POST':
-        if 'edit_keyword' in request.form:
-            new_keyword = request.form['new_keyword']
-            if len(new_keyword) > 0:
-                with Session(engine) as db_session:
-                    update_mail_keyword_with_id(db_session, mail_id, new_keyword)
-                    flash(f'Mail {mail_id} keyword updated', 'success')
-                return redirect(url_for('view_mail', mail_id=mail_id))
+    if request.method == 'POST' and 'edit_keyword' in request.form:
+        new_keyword = request.form['new_keyword']
+        if len(new_keyword) > 0:
+            with Session(engine) as db_session:
+                update_mail_keyword_with_id(db_session, mail_id, new_keyword)
+                flash(f'Mail {mail_id} keyword updated', 'success')
+            return redirect(url_for('view_mail', mail_id=mail_id))
     mail_id = int(mail_id)
     filters = {'id': mail_id}
     db_query = build_select_statement(filters)
@@ -185,11 +184,17 @@ def view_mail(mail_id):
     service = gmail_authenticate(mail_owner)
     plain_text = get_text_from_server(service, [{'mail_server_id': mail_server_id}])[0]['text']
     keywords = mail[6]
-
+    split_kw = keywords.replace(',', ' ').replace(';', ' ').split()
     params = {}
     if request.method == 'POST' and 'generate_keyword' in request.form:
-        params = keyword_generation_params(request, plain_text)
-    split_kw = keywords.replace(',', ' ').replace(';', ' ').split()
+        params = request.form.to_dict()
+        keywords = keyword_generation_from_params(request, plain_text)
+        params['keyword'] = keywords
+    if request.method == 'POST' and 'refresh' in request.form:
+        keywords_get = request.form['new_keyword']
+        if len(keywords_get) > 0:
+            keywords = ', '.join(keywords_get.replace(';', ' ').replace(',', ' ').split())
+            params['keyword'] = keywords
     plain_text = plain_text.replace('<', '').replace('>', '')
     highlighted_text = highlight_keyword_in_text(plain_text, keywords)
     is_owner = mail_owner == session['username']
