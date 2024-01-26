@@ -46,13 +46,13 @@ This web application aids in managing a company’s email database effectively.
 ![login_page](https://github.com/yileiCao/email-extraction/assets/63228731/ef99ffda-c98b-4f8f-8d28-b6bb0962ee64)
 
 ### Load mail page
-![load_mails](https://github.com/yileiCao/email-extraction/assets/63228731/87412f74-a1b6-4a58-bbf6-03337336a197)
+![load_email](https://github.com/yileiCao/email-analyser/assets/63228731/cb6981c8-10de-4779-9734-b5f50a5b6932)
 
 ### Confirm mail insertion
 ![confirm](https://github.com/yileiCao/email-analyser/assets/63228731/cb569f28-e1ca-4bee-beef-6da30c080711)
 
 ### Search mail page
-![search_email](https://github.com/yileiCao/email-analyser/assets/63228731/bc040db4-9978-41ce-ba36-7c0ed9652a65)
+![search_mail](https://github.com/yileiCao/email-analyser/assets/63228731/4c167497-a691-45dc-8b26-d93030a79b7e)
 
 ### Search mail results
 ![search_result](https://github.com/yileiCao/email-analyser/assets/63228731/6d301b05-7fba-48e6-8190-5f9dd4985f88)
